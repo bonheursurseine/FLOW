@@ -99,4 +99,34 @@ describe('entryFormState', () => {
 
     expect(errors).toEqual(['Ajoutez des heures, une qualite ou un commentaire.']);
   });
+
+  it('keeps hydration in cl and caffeine in cup counts', () => {
+    const hydration = normalizeEntryDraft({
+      entryType: 'hydration',
+      sourceType: 'spontaneous',
+      hydrationAmountCl: 75
+    });
+
+    const caffeine = normalizeEntryDraft({
+      entryType: 'caffeine',
+      sourceType: 'spontaneous',
+      caffeineCups: 2
+    });
+
+    expect(hydration.hydrationAmountCl).toBe(75);
+    expect(hydration.entryType).toBe('hydration');
+    expect(caffeine.caffeineCups).toBe(2);
+    expect(caffeine.caffeineLevel).toBeUndefined();
+  });
+
+  it('allows zero cups for caffeine and still validates the entry', () => {
+    const normalized = normalizeEntryDraft({
+      entryType: 'caffeine',
+      sourceType: 'spontaneous',
+      caffeineCups: 0
+    });
+
+    expect(normalized.caffeineCups).toBe(0);
+    expect(validateEntryDraft(normalized)).toEqual([]);
+  });
 });

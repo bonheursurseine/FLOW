@@ -12,6 +12,7 @@ const ENTRY_TYPE_OPTIONS: Array<{ label: string; value: EntryType | 'all' }> = [
   { value: 'checkIn', label: 'Check-in' },
   { value: 'form', label: 'Forme' },
   { value: 'sleep', label: 'Sommeil' },
+  { value: 'hydration', label: 'Hydratation' },
   { value: 'stress', label: 'Stress' },
   { value: 'mentalLoad', label: 'Charge mentale' },
   { value: 'migraine', label: 'Migraine' },

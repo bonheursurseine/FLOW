@@ -1,6 +1,7 @@
 export type EntryType =
   | 'form'
   | 'sleep'
+  | 'hydration'
   | 'stress'
   | 'mentalLoad'
   | 'migraine'
@@ -36,6 +37,7 @@ export interface TrackingEntry {
   wakeTime?: string;
   sleepDuration?: number;
   sleepQuality?: number;
+  hydrationAmountCl?: number;
   stressLevel?: number;
   mentalLoad?: number;
   migraineLevel?: MigraineLevel;
@@ -43,6 +45,7 @@ export interface TrackingEntry {
   migraineMedicationTaken?: boolean;
   migraineMedicationNote?: string;
   caffeineLevel?: CaffeineLevel;
+  caffeineCups?: number;
   physicalActivityLevel?: PhysicalActivityLevel;
   mealType?: MealType;
   napDuration?: number;

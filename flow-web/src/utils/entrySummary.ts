@@ -1,6 +1,8 @@
 import type { TrackingEntry } from '../types/tracking';
 import {
+  formatCaffeineCups,
   formatDurationMinutes,
+  formatHydrationCl,
   formatOptionalText,
   formatScore,
   getCaffeineLevelLabel,
@@ -26,6 +28,11 @@ export function summarizeEntry(entry: TrackingEntry): string {
         entry.sleepQuality ? `Qualite ${formatScore(entry.sleepQuality)}` : undefined,
         entry.comment
       ]);
+    case 'hydration':
+      return summarizeParts([
+        entry.hydrationAmountCl ? `Hydratation ${formatHydrationCl(entry.hydrationAmountCl)}` : undefined,
+        entry.comment
+      ]);
     case 'stress':
       return summarizeParts([`Stress ${formatScore(entry.stressLevel)}`, entry.comment]);
     case 'mentalLoad':
@@ -37,7 +44,10 @@ export function summarizeEntry(entry: TrackingEntry): string {
         entry.comment
       ]);
     case 'caffeine':
-      return summarizeParts([getCaffeineLevelLabel(entry.caffeineLevel), entry.comment]);
+      return summarizeParts([
+        typeof entry.caffeineCups === 'number' ? `Cafeine ${formatCaffeineCups(entry.caffeineCups)}` : getCaffeineLevelLabel(entry.caffeineLevel),
+        entry.comment
+      ]);
     case 'physicalActivity':
       return summarizeParts([getPhysicalActivityLevelLabel(entry.physicalActivityLevel), entry.comment]);
     case 'meal':

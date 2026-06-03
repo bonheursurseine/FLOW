@@ -16,6 +16,7 @@ export interface LocalSettings {
 const DEFAULT_VISIBLE_HOME_ENTRY_TYPES: ReadonlyArray<EntryType> = Object.freeze([
   'checkIn',
   'sleep',
+  'hydration',
   'stress',
   'mentalLoad',
   'migraine',

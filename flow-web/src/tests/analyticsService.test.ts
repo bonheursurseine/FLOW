@@ -186,19 +186,19 @@ describe('analyticsService', () => {
         id: 'caffeine-day-1',
         entryType: 'caffeine',
         timestamp: '2026-06-01T08:00:00',
-        caffeineLevel: 'high'
+        caffeineCups: 2
       }),
       createEntry({
         id: 'caffeine-day-2',
         entryType: 'caffeine',
         timestamp: '2026-06-02T08:00:00',
-        caffeineLevel: 'none'
+        caffeineCups: 0
       }),
       createEntry({
         id: 'caffeine-day-3',
         entryType: 'caffeine',
         timestamp: '2026-06-03T08:00:00',
-        caffeineLevel: 'high'
+        caffeineCups: 2
       }),
       createEntry({
         id: 'meditation-1',
@@ -236,8 +236,8 @@ describe('analyticsService', () => {
         entriesWithPainScore: 3
       },
       vsCaffeine: [
-        { averageEpisodes: 1, count: 1, key: 'none', label: 'Cafeine absente' },
-        { averageEpisodes: 1, count: 2, key: 'high', label: 'Cafeine elevee' }
+        { averageEpisodes: 1, count: 1, key: 'none', label: '0 tasse' },
+        { averageEpisodes: 1, count: 2, key: 'high', label: '2 tasses ou plus' }
       ],
       vsStress: [
         { averageEpisodes: 1, count: 1, key: 'low', label: 'Stress bas (1-3)' },

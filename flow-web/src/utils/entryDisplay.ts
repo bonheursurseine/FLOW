@@ -13,6 +13,7 @@ const ENTRY_TYPE_LABELS: Record<EntryType, string> = {
   checkIn: 'Check-in',
   form: 'Forme',
   freeNote: 'Note libre',
+  hydration: 'Hydratation',
   meal: 'Repas',
   medication: 'Medicament',
   meditation: 'Meditation',
@@ -81,6 +82,22 @@ export function formatDurationMinutes(minutes: number | undefined): string {
   }
 
   return `${minutes} min`;
+}
+
+export function formatCaffeineCups(cups: number | undefined): string {
+  if (typeof cups !== 'number' || Number.isNaN(cups)) {
+    return 'Cafeine';
+  }
+
+  return `${cups} ${cups > 1 ? 'tasses' : 'tasse'}`;
+}
+
+export function formatHydrationCl(amountCl: number | undefined): string {
+  if (typeof amountCl !== 'number' || Number.isNaN(amountCl)) {
+    return 'Hydratation';
+  }
+
+  return `${amountCl} cL`;
 }
 
 export function formatHourLabel(hour: number): string {

@@ -1,4 +1,4 @@
-import type { CaffeineLevel, TrackingEntry } from '../types/tracking';
+import type { TrackingEntry } from '../types/tracking';
 import {
   average,
   type DailyAveragePoint,
@@ -6,7 +6,6 @@ import {
   groupAverageByDate,
   groupAverageByHour,
   groupSumByWeek,
-  indexDailyCategory,
   indexDailyValue,
   pickRecentWindow,
   round,
@@ -50,7 +49,7 @@ export interface MigraineAnalytics {
   byHour: MigraineHourPoint[];
   frequency: MigraineFrequencyStats;
   intensity: MigraineIntensityStats;
-  vsCaffeine: MigraineComparisonPoint<CaffeineLevel>[];
+  vsCaffeine: MigraineComparisonPoint<'none' | 'low' | 'high'>[];
   vsStress: MigraineComparisonPoint<'low' | 'medium' | 'high'>[];
 }
 
@@ -113,19 +112,11 @@ const MENTAL_LOAD_BUCKETS: Array<NumericBucket<'low' | 'medium' | 'high'>> = [
   { key: 'high', label: 'Charge elevee (7-10)', matches: (value) => value >= 7 }
 ];
 
-const CAFFEINE_LABELS: Record<CaffeineLevel, string> = {
-  high: 'Cafeine elevee',
-  low: 'Cafeine legere',
-  medium: 'Cafeine moyenne',
-  none: 'Cafeine absente'
-};
-
-const CAFFEINE_RANK: Record<CaffeineLevel, number> = {
-  high: 3,
-  low: 1,
-  medium: 2,
-  none: 0
-};
+const CAFFEINE_CUP_BUCKETS: Array<NumericBucket<'none' | 'low' | 'high'>> = [
+  { key: 'none', label: '0 tasse', matches: (value) => value === 0 },
+  { key: 'low', label: '1 tasse', matches: (value) => value > 0 && value < 2 },
+  { key: 'high', label: '2 tasses ou plus', matches: (value) => value >= 2 }
+];
 
 export function analyzeEntries(entries: TrackingEntry[]): AnalyticsSnapshot {
   const formDailyAverage = dailyFormAverage(entries);
@@ -197,14 +188,13 @@ export function analyzeMigraine(entries: TrackingEntry[]): MigraineAnalytics {
       averagePain: painScores.length > 0 ? average(painScores) : null,
       entriesWithPainScore: painScores.length
     },
-    vsCaffeine: compareDailyCountsWithCategory(
+    vsCaffeine: compareDailyCountsWithNumericBucket(
       migraineCountByDay,
-      indexDailyCategory(
+      indexDailyValue(
         entries.filter((entry) => entry.entryType === 'caffeine'),
-        (entry) => entry.caffeineLevel,
-        (value) => CAFFEINE_RANK[value]
+        (entry) => entry.caffeineCups
       ),
-      (key) => CAFFEINE_LABELS[key]
+      CAFFEINE_CUP_BUCKETS
     ),
     vsStress: compareDailyCountsWithNumericBucket(
       migraineCountByDay,

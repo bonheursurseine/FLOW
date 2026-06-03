@@ -3,7 +3,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { BottomSheet } from '../../components/BottomSheet';
 import { trackingRepository } from '../../storage/trackingRepository';
 import type {
-  CaffeineLevel,
   EntryType,
   MealType,
   MigraineLevel,
@@ -145,6 +144,17 @@ function renderFields(
           </>
         );
       }
+    case 'hydration':
+      return (
+        <>
+          <NumberField
+            label="Hydratation (cL)"
+            onChange={(value) => update('hydrationAmountCl', value)}
+            value={draft.hydrationAmountCl}
+          />
+          <TextAreaField label="Commentaire" onChange={(value) => update('comment', value)} value={draft.comment} />
+        </>
+      );
     case 'stress':
       return (
         <>
@@ -194,16 +204,10 @@ function renderFields(
     case 'caffeine':
       return (
         <>
-          <SelectField
-            label="Cafeine"
-            onChange={(value) => update('caffeineLevel', parseOptionalEnum<CaffeineLevel>(value))}
-            options={[
-              { value: 'none', label: 'Aucune' },
-              { value: 'low', label: 'Legere' },
-              { value: 'medium', label: 'Moyenne' },
-              { value: 'high', label: 'Elevee' }
-            ]}
-            value={draft.caffeineLevel}
+          <NumberField
+            label="Nombre de tasses"
+            onChange={(value) => update('caffeineCups', value)}
+            value={draft.caffeineCups}
           />
           <TextAreaField label="Commentaire" onChange={(value) => update('comment', value)} value={draft.comment} />
         </>
@@ -448,12 +452,9 @@ function parseTimeValue(value: string): string | undefined {
 }
 
 function formatSleepDuration(value: number): string {
-  const hours = Math.floor(value);
-  const minutes = Math.round((value - hours) * 60);
+  const totalMinutes = Math.round(value * 60);
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
 
-  if (minutes === 0) {
-    return `${hours}h`;
-  }
-
-  return `${hours}h${String(minutes).padStart(2, '0')}`;
+  return `${hours} h ${String(minutes).padStart(2, '0')} min`;
 }

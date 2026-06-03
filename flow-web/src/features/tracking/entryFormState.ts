@@ -9,10 +9,11 @@ export interface EntryCardDefinition {
 export const ENTRY_CARD_DEFINITIONS: EntryCardDefinition[] = [
   { entryType: 'form', title: 'Forme', description: 'Noter votre niveau de forme du moment.' },
   { entryType: 'sleep', title: 'Sommeil', description: 'Duree, qualite et ressenti de sommeil.' },
+  { entryType: 'hydration', title: 'Hydratation', description: 'Tracer une quantite bue en cL.' },
   { entryType: 'stress', title: 'Stress', description: 'Noter le stress du moment.' },
   { entryType: 'mentalLoad', title: 'Charge mentale', description: 'Evaluer la charge mentale ressentie.' },
   { entryType: 'migraine', title: 'Migraine', description: 'Episode, intensite et contexte migraineux.' },
-  { entryType: 'caffeine', title: 'Cafeine', description: 'Tracer l impact d une prise de cafeine.' },
+  { entryType: 'caffeine', title: 'Cafeine', description: 'Tracer un nombre de tasses de cafeine.' },
   { entryType: 'physicalActivity', title: 'Activite physique', description: 'Noter l intensite de l activite.' },
   { entryType: 'meal', title: 'Repas', description: 'Documenter un repas leger ou copieux.' },
   { entryType: 'nap', title: 'Sieste', description: 'Noter une sieste et sa duree.' },
@@ -102,6 +103,12 @@ export function normalizeEntryDraft(draft: TrackingEntryDraft): TrackingEntryDra
           comment: normalizeText(draft.comment)
         };
       }
+    case 'hydration':
+      return {
+        ...base,
+        hydrationAmountCl: normalizePositiveNumber(draft.hydrationAmountCl),
+        comment: normalizeText(draft.comment)
+      };
     case 'stress':
       return {
         ...base,
@@ -127,7 +134,8 @@ export function normalizeEntryDraft(draft: TrackingEntryDraft): TrackingEntryDra
     case 'caffeine':
       return {
         ...base,
-        caffeineLevel: draft.caffeineLevel,
+        caffeineCups: normalizeNonNegativeNumber(draft.caffeineCups),
+        caffeineLevel: undefined,
         comment: normalizeText(draft.comment)
       };
     case 'physicalActivity':
@@ -192,6 +200,8 @@ export function validateEntryDraft(draft: TrackingEntryDraft): string[] {
       return requireOne(normalized, ['energyScore', 'comment'], 'Ajoutez une note de forme ou un commentaire.');
     case 'sleep':
       return validateSleepDraft(normalized);
+    case 'hydration':
+      return requireOne(normalized, ['hydrationAmountCl', 'comment'], 'Ajoutez une quantite d hydratation ou un commentaire.');
     case 'stress':
       return requireOne(normalized, ['stressLevel', 'comment'], 'Ajoutez un niveau de stress ou un commentaire.');
     case 'mentalLoad':
@@ -203,7 +213,7 @@ export function validateEntryDraft(draft: TrackingEntryDraft): string[] {
         'Ajoutez au moins une information sur la migraine.'
       );
     case 'caffeine':
-      return requireOne(normalized, ['caffeineLevel', 'comment'], 'Ajoutez un niveau de cafeine ou un commentaire.');
+      return requireOne(normalized, ['caffeineCups', 'comment'], 'Ajoutez un nombre de tasses ou un commentaire.');
     case 'physicalActivity':
       return requireOne(
         normalized,
@@ -234,6 +244,14 @@ export function validateEntryDraft(draft: TrackingEntryDraft): string[] {
 
 function normalizePositiveNumber(value: number | undefined): number | undefined {
   if (typeof value !== 'number' || Number.isNaN(value) || value <= 0) {
+    return undefined;
+  }
+
+  return value;
+}
+
+function normalizeNonNegativeNumber(value: number | undefined): number | undefined {
+  if (typeof value !== 'number' || Number.isNaN(value) || value < 0) {
     return undefined;
   }
 
