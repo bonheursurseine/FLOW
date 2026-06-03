@@ -104,6 +104,14 @@ a {
   font-size: 1rem;
 }
 
+.pwa-update-banner {
+  margin-bottom: var(--flow-space-5);
+}
+
+.pwa-update-banner .quick-check-in__action {
+  margin-top: var(--flow-space-5);
+}
+
 .hero-card h2,
 .status-card h2,
 .bottom-sheet__header h2 {
