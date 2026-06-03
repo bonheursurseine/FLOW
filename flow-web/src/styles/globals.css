@@ -92,6 +92,11 @@ a {
   line-height: 0.95;
 }
 
+.quick-check-in__title {
+  font-size: clamp(2rem, 7vw, 3.25rem);
+  line-height: 1;
+}
+
 .hero-copy,
 .status-copy {
   margin: var(--flow-space-4) 0 0;

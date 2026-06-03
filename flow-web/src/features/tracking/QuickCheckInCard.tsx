@@ -35,12 +35,10 @@ export function QuickCheckInCard({ onSaved }: QuickCheckInCardProps) {
   }
 
   return (
-    <section aria-labelledby="quick-check-in-title" className="hero-card">
-      <p className="eyebrow">Noter</p>
-      <h1 id="quick-check-in-title">Check-in rapide</h1>
-      <p className="hero-copy">
-        Une saisie courte pour noter l energie et le stress en quelques secondes.
-      </p>
+    <section aria-labelledby="quick-check-in-title" className="hero-card quick-check-in-card">
+      <h1 className="quick-check-in__title" id="quick-check-in-title">
+        Check-in rapide
+      </h1>
       <div className="quick-check-in">
         <RangeField
           label={`Energie ${energyScore}/10`}
