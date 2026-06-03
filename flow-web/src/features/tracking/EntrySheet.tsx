@@ -15,6 +15,7 @@ import type {
 import { getEntryTypeLabel } from '../../utils/entryDisplay';
 
 import {
+  calculateSleepDurationFromTimes,
   createDraftFromEntry,
   createEntryDraft,
   normalizeEntryDraft,
@@ -124,22 +125,26 @@ function renderFields(
         </>
       );
     case 'sleep':
-      return (
-        <>
-          <NumberField
-            label="Duree de sommeil (heures)"
-            onChange={(value) => update('sleepDuration', value)}
-            step={0.5}
-            value={draft.sleepDuration}
-          />
-          <NumberField
-            label="Qualite / 10"
-            onChange={(value) => update('sleepQuality', value)}
-            value={draft.sleepQuality}
-          />
-          <TextAreaField label="Commentaire" onChange={(value) => update('comment', value)} value={draft.comment} />
-        </>
-      );
+      {
+        const calculatedDuration = calculateSleepDurationFromTimes(draft.bedTime, draft.wakeTime);
+
+        return (
+          <>
+            <TimeField label="Heure de couche" onChange={(value) => update('bedTime', value)} value={draft.bedTime} />
+            <TimeField label="Heure de reveil" onChange={(value) => update('wakeTime', value)} value={draft.wakeTime} />
+            <ReadOnlyField
+              label="Duree calculee"
+              value={calculatedDuration ? `${formatSleepDuration(calculatedDuration)}` : 'Renseignez les deux heures'}
+            />
+            <NumberField
+              label="Qualite / 10"
+              onChange={(value) => update('sleepQuality', value)}
+              value={draft.sleepQuality}
+            />
+            <TextAreaField label="Commentaire" onChange={(value) => update('comment', value)} value={draft.comment} />
+          </>
+        );
+      }
     case 'stress':
       return (
         <>
@@ -338,6 +343,26 @@ function NumberField({ label, onChange, step = 1, value }: NumberFieldProps) {
   );
 }
 
+interface TimeFieldProps {
+  label: string;
+  onChange: (value: string | undefined) => void;
+  value?: string;
+}
+
+function TimeField({ label, onChange, value }: TimeFieldProps) {
+  return (
+    <label className="entry-sheet__field">
+      <span>{label}</span>
+      <input
+        onChange={(event) => onChange(parseTimeValue(event.target.value))}
+        step={300}
+        type="time"
+        value={value ?? ''}
+      />
+    </label>
+  );
+}
+
 interface SelectFieldProps {
   label: string;
   onChange: (value: string) => void;
@@ -391,6 +416,20 @@ function ToggleField({ checked, label, onChange }: ToggleFieldProps) {
   );
 }
 
+interface ReadOnlyFieldProps {
+  label: string;
+  value: string;
+}
+
+function ReadOnlyField({ label, value }: ReadOnlyFieldProps) {
+  return (
+    <label className="entry-sheet__field">
+      <span>{label}</span>
+      <input readOnly type="text" value={value} />
+    </label>
+  );
+}
+
 function parseNumericValue(value: string): number | undefined {
   if (value.trim().length === 0) {
     return undefined;
@@ -402,4 +441,19 @@ function parseNumericValue(value: string): number | undefined {
 
 function parseOptionalEnum<T extends string>(value: string): T | undefined {
   return value.length > 0 ? (value as T) : undefined;
+}
+
+function parseTimeValue(value: string): string | undefined {
+  return value.trim().length > 0 ? value : undefined;
+}
+
+function formatSleepDuration(value: number): string {
+  const hours = Math.floor(value);
+  const minutes = Math.round((value - hours) * 60);
+
+  if (minutes === 0) {
+    return `${hours}h`;
+  }
+
+  return `${hours}h${String(minutes).padStart(2, '0')}`;
 }

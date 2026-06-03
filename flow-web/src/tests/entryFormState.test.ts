@@ -50,14 +50,53 @@ describe('entryFormState', () => {
       timestamp: '2026-06-02T09:30:00.000Z',
       entryType: 'sleep',
       sourceType: 'spontaneous',
+      bedTime: '23:00',
+      wakeTime: '07:00',
       sleepDuration: 7.5,
       sleepQuality: 8,
       comment: 'Bonne nuit'
     });
 
     expect(draft.id).toBe('entry-1');
+    expect(draft.bedTime).toBe('23:00');
+    expect(draft.wakeTime).toBe('07:00');
     expect(draft.sleepDuration).toBe(7.5);
     expect(draft.sleepQuality).toBe(8);
     expect(draft.comment).toBe('Bonne nuit');
+  });
+
+  it('computes sleep duration from bed time and wake time overnight', () => {
+    const normalized = normalizeEntryDraft({
+      entryType: 'sleep',
+      sourceType: 'spontaneous',
+      bedTime: '23:00',
+      wakeTime: '07:00'
+    });
+
+    expect(normalized.bedTime).toBe('23:00');
+    expect(normalized.wakeTime).toBe('07:00');
+    expect(normalized.sleepDuration).toBe(8);
+  });
+
+  it('computes sleep duration from bed time and wake time on the same day', () => {
+    const normalized = normalizeEntryDraft({
+      entryType: 'sleep',
+      sourceType: 'spontaneous',
+      bedTime: '01:15',
+      wakeTime: '08:45'
+    });
+
+    expect(normalized.sleepDuration).toBe(7.5);
+  });
+
+  it('requires at least one sleep field after duration is auto-calculated', () => {
+    const errors = validateEntryDraft({
+      entryType: 'sleep',
+      sourceType: 'spontaneous',
+      bedTime: '   ',
+      wakeTime: '   '
+    });
+
+    expect(errors).toEqual(['Ajoutez des heures, une qualite ou un commentaire.']);
   });
 });

@@ -85,12 +85,23 @@ export function normalizeEntryDraft(draft: TrackingEntryDraft): TrackingEntryDra
         comment: normalizeText(draft.comment)
       };
     case 'sleep':
-      return {
-        ...base,
-        sleepDuration: normalizePositiveNumber(draft.sleepDuration),
-        sleepQuality: normalizeScore(draft.sleepQuality),
-        comment: normalizeText(draft.comment)
-      };
+      {
+        const bedTime = normalizeTimeValue(draft.bedTime);
+        const wakeTime = normalizeTimeValue(draft.wakeTime);
+        const hasAnySleepTime = bedTime !== undefined || wakeTime !== undefined;
+        const sleepDuration = hasAnySleepTime
+          ? calculateSleepDurationFromTimes(bedTime, wakeTime)
+          : normalizePositiveNumber(draft.sleepDuration);
+
+        return {
+          ...base,
+          bedTime,
+          wakeTime,
+          sleepDuration,
+          sleepQuality: normalizeScore(draft.sleepQuality),
+          comment: normalizeText(draft.comment)
+        };
+      }
     case 'stress':
       return {
         ...base,
@@ -180,7 +191,7 @@ export function validateEntryDraft(draft: TrackingEntryDraft): string[] {
     case 'form':
       return requireOne(normalized, ['energyScore', 'comment'], 'Ajoutez une note de forme ou un commentaire.');
     case 'sleep':
-      return requireOne(normalized, ['sleepDuration', 'sleepQuality', 'comment'], 'Ajoutez une duree, une qualite ou un commentaire.');
+      return validateSleepDraft(normalized);
     case 'stress':
       return requireOne(normalized, ['stressLevel', 'comment'], 'Ajoutez un niveau de stress ou un commentaire.');
     case 'mentalLoad':
@@ -242,6 +253,64 @@ function normalizeText(value: string | undefined): string | undefined {
   return trimmed ? trimmed : undefined;
 }
 
+function normalizeTimeValue(value: string | undefined): string | undefined {
+  const trimmed = value?.trim();
+
+  if (!trimmed) {
+    return undefined;
+  }
+
+  const match = trimmed.match(/^(\d{1,2}):(\d{2})$/);
+  if (!match) {
+    return undefined;
+  }
+
+  const hour = Number(match[1]);
+  const minute = Number(match[2]);
+
+  if (Number.isNaN(hour) || Number.isNaN(minute) || hour < 0 || hour > 23 || minute < 0 || minute > 59) {
+    return undefined;
+  }
+
+  return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+}
+
+export function calculateSleepDurationFromTimes(
+  bedTime: string | undefined,
+  wakeTime: string | undefined
+): number | undefined {
+  if (!bedTime || !wakeTime) {
+    return undefined;
+  }
+
+  const bedMinutes = parseTimeToMinutes(bedTime);
+  const wakeMinutes = parseTimeToMinutes(wakeTime);
+
+  if (bedMinutes === undefined || wakeMinutes === undefined || bedMinutes === wakeMinutes) {
+    return undefined;
+  }
+
+  const differenceMinutes = wakeMinutes > bedMinutes ? wakeMinutes - bedMinutes : 24 * 60 - bedMinutes + wakeMinutes;
+  return differenceMinutes / 60;
+}
+
+function parseTimeToMinutes(value: string): number | undefined {
+  const match = value.match(/^(\d{2}):(\d{2})$/);
+
+  if (!match) {
+    return undefined;
+  }
+
+  const hour = Number(match[1]);
+  const minute = Number(match[2]);
+
+  if (Number.isNaN(hour) || Number.isNaN(minute) || hour < 0 || hour > 23 || minute < 0 || minute > 59) {
+    return undefined;
+  }
+
+  return hour * 60 + minute;
+}
+
 function hasValue(value: unknown): boolean {
   if (typeof value === 'string') {
     return value.trim().length > 0;
@@ -264,4 +333,10 @@ function requireOne(
   message: string
 ): string[] {
   return fieldNames.some((fieldName) => hasValue(draft[fieldName])) ? [] : [message];
+}
+
+function validateSleepDraft(draft: TrackingEntryDraft): string[] {
+  return hasValue(draft.sleepDuration) || hasValue(draft.sleepQuality) || hasValue(draft.comment)
+    ? []
+    : ['Ajoutez des heures, une qualite ou un commentaire.'];
 }

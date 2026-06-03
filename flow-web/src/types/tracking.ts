@@ -32,6 +32,8 @@ export interface TrackingEntry {
   scheduledTime?: string;
   completedFromNotification?: boolean;
   energyScore?: number;
+  bedTime?: string;
+  wakeTime?: string;
   sleepDuration?: number;
   sleepQuality?: number;
   stressLevel?: number;
