@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="FLOW">
+  <defs>
+    <linearGradient id="flowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f3efe6" />
+      <stop offset="100%" stop-color="#d8c9b1" />
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="32" fill="url(#flowGradient)" />
+  <path
+    d="M34 36h50v10H46v18h32v10H46v18H34V36Zm57 0h10v56H91V36Z"
+    fill="#4f7a67"
+  />
+</svg>

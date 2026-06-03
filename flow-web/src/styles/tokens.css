@@ -1,0 +1,28 @@
+:root {
+  color-scheme: light;
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  --flow-bg: #f8f5ee;
+  --flow-bg-strong: #efe6d7;
+  --flow-surface: rgba(255, 252, 246, 0.82);
+  --flow-surface-strong: #fffdf8;
+  --flow-border: rgba(108, 88, 61, 0.12);
+  --flow-text: #2f261b;
+  --flow-text-soft: #6b5f51;
+  --flow-accent: #4f7a67;
+  --flow-accent-soft: rgba(79, 122, 103, 0.14);
+  --flow-shadow: 0 24px 60px rgba(62, 47, 29, 0.12);
+  --flow-radius-lg: 28px;
+  --flow-radius-md: 18px;
+  --flow-radius-sm: 12px;
+  --flow-space-1: 0.25rem;
+  --flow-space-2: 0.5rem;
+  --flow-space-3: 0.75rem;
+  --flow-space-4: 1rem;
+  --flow-space-5: 1.5rem;
+  --flow-space-6: 2rem;
+  --flow-space-7: 3rem;
+  --flow-max-width: 32rem;
+}

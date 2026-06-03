@@ -1,0 +1,267 @@
+import type { EntryType, SourceType, TrackingEntry, TrackingEntryDraft } from '../../types/tracking';
+
+export interface EntryCardDefinition {
+  description: string;
+  entryType: EntryType;
+  title: string;
+}
+
+export const ENTRY_CARD_DEFINITIONS: EntryCardDefinition[] = [
+  { entryType: 'form', title: 'Forme', description: 'Noter votre niveau de forme du moment.' },
+  { entryType: 'sleep', title: 'Sommeil', description: 'Duree, qualite et ressenti de sommeil.' },
+  { entryType: 'stress', title: 'Stress', description: 'Noter le stress du moment.' },
+  { entryType: 'mentalLoad', title: 'Charge mentale', description: 'Evaluer la charge mentale ressentie.' },
+  { entryType: 'migraine', title: 'Migraine', description: 'Episode, intensite et contexte migraineux.' },
+  { entryType: 'caffeine', title: 'Cafeine', description: 'Tracer l impact d une prise de cafeine.' },
+  { entryType: 'physicalActivity', title: 'Activite physique', description: 'Noter l intensite de l activite.' },
+  { entryType: 'meal', title: 'Repas', description: 'Documenter un repas leger ou copieux.' },
+  { entryType: 'nap', title: 'Sieste', description: 'Noter une sieste et sa duree.' },
+  { entryType: 'screenTime', title: 'Temps d ecran', description: 'Suivre un niveau d exposition ecran.' },
+  { entryType: 'medication', title: 'Medicament', description: 'Garder une trace d une prise.' },
+  { entryType: 'meditation', title: 'Meditation', description: 'Noter une seance et sa duree.' },
+  { entryType: 'notableEvent', title: 'Evenement', description: 'Capturer un evenement marquant.' },
+  { entryType: 'freeNote', title: 'Note libre', description: 'Ecrire une note rapide sans cadre.' }
+];
+
+const SCORE_MIN = 1;
+const SCORE_MAX = 10;
+
+export function createDraftFromEntry(entry: TrackingEntry): TrackingEntryDraft {
+  return { ...entry };
+}
+
+export function createEntryDraft(
+  entryType: EntryType,
+  sourceType: SourceType = entryType === 'checkIn' ? 'spontaneous' : 'spontaneous'
+): TrackingEntryDraft {
+  return normalizeEntryDraft({
+    entryType,
+    sourceType,
+    completedFromNotification: sourceType === 'scheduledCheckIn'
+  });
+}
+
+export function createQuickCheckInDraft(input: {
+  energyScore: number;
+  stressLevel: number;
+  sourceType?: SourceType;
+  comment?: string;
+}): TrackingEntryDraft {
+  return normalizeEntryDraft({
+    comment: input.comment,
+    completedFromNotification: input.sourceType === 'scheduledCheckIn',
+    energyScore: input.energyScore,
+    entryType: 'checkIn',
+    sourceType: input.sourceType ?? 'spontaneous',
+    stressLevel: input.stressLevel
+  });
+}
+
+export function normalizeEntryDraft(draft: TrackingEntryDraft): TrackingEntryDraft {
+  const entryType = draft.entryType ?? 'freeNote';
+  const sourceType = draft.sourceType ?? (entryType === 'checkIn' ? 'spontaneous' : 'spontaneous');
+  const base: TrackingEntryDraft = {
+    id: draft.id,
+    timestamp: draft.timestamp,
+    entryType,
+    sourceType,
+    notificationId: normalizeText(draft.notificationId),
+    scheduledTime: normalizeText(draft.scheduledTime),
+    completedFromNotification: sourceType === 'scheduledCheckIn' ? Boolean(draft.completedFromNotification) : false
+  };
+
+  switch (entryType) {
+    case 'checkIn':
+      return {
+        ...base,
+        energyScore: normalizeScore(draft.energyScore),
+        stressLevel: normalizeScore(draft.stressLevel),
+        comment: normalizeText(draft.comment)
+      };
+    case 'form':
+      return {
+        ...base,
+        energyScore: normalizeScore(draft.energyScore),
+        comment: normalizeText(draft.comment)
+      };
+    case 'sleep':
+      return {
+        ...base,
+        sleepDuration: normalizePositiveNumber(draft.sleepDuration),
+        sleepQuality: normalizeScore(draft.sleepQuality),
+        comment: normalizeText(draft.comment)
+      };
+    case 'stress':
+      return {
+        ...base,
+        stressLevel: normalizeScore(draft.stressLevel),
+        comment: normalizeText(draft.comment)
+      };
+    case 'mentalLoad':
+      return {
+        ...base,
+        mentalLoad: normalizeScore(draft.mentalLoad),
+        comment: normalizeText(draft.comment)
+      };
+    case 'migraine':
+      return {
+        ...base,
+        migraineLevel: draft.migraineLevel,
+        migrainePainScore: normalizeScore(draft.migrainePainScore),
+        migraineMedicationTaken:
+          typeof draft.migraineMedicationTaken === 'boolean' ? draft.migraineMedicationTaken : undefined,
+        migraineMedicationNote: normalizeText(draft.migraineMedicationNote),
+        comment: normalizeText(draft.comment)
+      };
+    case 'caffeine':
+      return {
+        ...base,
+        caffeineLevel: draft.caffeineLevel,
+        comment: normalizeText(draft.comment)
+      };
+    case 'physicalActivity':
+      return {
+        ...base,
+        physicalActivityLevel: draft.physicalActivityLevel,
+        comment: normalizeText(draft.comment)
+      };
+    case 'meal':
+      return {
+        ...base,
+        mealType: draft.mealType,
+        comment: normalizeText(draft.comment)
+      };
+    case 'nap':
+      return {
+        ...base,
+        napDuration: normalizePositiveNumber(draft.napDuration),
+        comment: normalizeText(draft.comment)
+      };
+    case 'screenTime':
+      return {
+        ...base,
+        screenTimeLevel: draft.screenTimeLevel,
+        comment: normalizeText(draft.comment)
+      };
+    case 'medication':
+      return {
+        ...base,
+        medicationNote: normalizeText(draft.medicationNote),
+        comment: normalizeText(draft.comment)
+      };
+    case 'meditation':
+      return {
+        ...base,
+        meditationDuration: normalizePositiveNumber(draft.meditationDuration),
+        comment: normalizeText(draft.comment)
+      };
+    case 'notableEvent':
+      return {
+        ...base,
+        eventNote: normalizeText(draft.eventNote),
+        comment: normalizeText(draft.comment)
+      };
+    case 'freeNote':
+    default:
+      return {
+        ...base,
+        freeNote: normalizeText(draft.freeNote),
+        comment: normalizeText(draft.comment)
+      };
+  }
+}
+
+export function validateEntryDraft(draft: TrackingEntryDraft): string[] {
+  const normalized = normalizeEntryDraft(draft);
+
+  switch (normalized.entryType) {
+    case 'checkIn':
+      return requireFields(normalized, ['energyScore', 'stressLevel'], 'Le check-in rapide demande energie et stress.');
+    case 'form':
+      return requireOne(normalized, ['energyScore', 'comment'], 'Ajoutez une note de forme ou un commentaire.');
+    case 'sleep':
+      return requireOne(normalized, ['sleepDuration', 'sleepQuality', 'comment'], 'Ajoutez une duree, une qualite ou un commentaire.');
+    case 'stress':
+      return requireOne(normalized, ['stressLevel', 'comment'], 'Ajoutez un niveau de stress ou un commentaire.');
+    case 'mentalLoad':
+      return requireOne(normalized, ['mentalLoad', 'comment'], 'Ajoutez une charge mentale ou un commentaire.');
+    case 'migraine':
+      return requireOne(
+        normalized,
+        ['migraineLevel', 'migrainePainScore', 'migraineMedicationNote', 'comment'],
+        'Ajoutez au moins une information sur la migraine.'
+      );
+    case 'caffeine':
+      return requireOne(normalized, ['caffeineLevel', 'comment'], 'Ajoutez un niveau de cafeine ou un commentaire.');
+    case 'physicalActivity':
+      return requireOne(
+        normalized,
+        ['physicalActivityLevel', 'comment'],
+        'Ajoutez un niveau d activite ou un commentaire.'
+      );
+    case 'meal':
+      return requireOne(normalized, ['mealType', 'comment'], 'Ajoutez un type de repas ou un commentaire.');
+    case 'nap':
+      return requireOne(normalized, ['napDuration', 'comment'], 'Ajoutez une duree de sieste ou un commentaire.');
+    case 'screenTime':
+      return requireOne(normalized, ['screenTimeLevel', 'comment'], 'Ajoutez un niveau d ecran ou un commentaire.');
+    case 'medication':
+      return requireOne(normalized, ['medicationNote', 'comment'], 'Ajoutez une note de medicament ou un commentaire.');
+    case 'meditation':
+      return requireOne(
+        normalized,
+        ['meditationDuration', 'comment'],
+        'Ajoutez une duree de meditation ou un commentaire.'
+      );
+    case 'notableEvent':
+      return requireOne(normalized, ['eventNote', 'comment'], 'Ajoutez un evenement ou un commentaire.');
+    case 'freeNote':
+    default:
+      return requireOne(normalized, ['freeNote', 'comment'], 'Ajoutez une note avant d enregistrer.');
+  }
+}
+
+function normalizePositiveNumber(value: number | undefined): number | undefined {
+  if (typeof value !== 'number' || Number.isNaN(value) || value <= 0) {
+    return undefined;
+  }
+
+  return value;
+}
+
+function normalizeScore(value: number | undefined): number | undefined {
+  if (typeof value !== 'number' || Number.isNaN(value)) {
+    return undefined;
+  }
+
+  return Math.min(SCORE_MAX, Math.max(SCORE_MIN, value));
+}
+
+function normalizeText(value: string | undefined): string | undefined {
+  const trimmed = value?.trim();
+  return trimmed ? trimmed : undefined;
+}
+
+function hasValue(value: unknown): boolean {
+  if (typeof value === 'string') {
+    return value.trim().length > 0;
+  }
+
+  return value !== undefined && value !== null;
+}
+
+function requireFields(
+  draft: TrackingEntryDraft,
+  fieldNames: Array<keyof TrackingEntryDraft>,
+  message: string
+): string[] {
+  return fieldNames.every((fieldName) => hasValue(draft[fieldName])) ? [] : [message];
+}
+
+function requireOne(
+  draft: TrackingEntryDraft,
+  fieldNames: Array<keyof TrackingEntryDraft>,
+  message: string
+): string[] {
+  return fieldNames.some((fieldName) => hasValue(draft[fieldName])) ? [] : [message];
+}
