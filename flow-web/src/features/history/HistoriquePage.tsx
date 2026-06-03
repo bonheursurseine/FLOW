@@ -52,7 +52,7 @@ export function HistoriquePage() {
 
   return (
     <main className="app-shell__surface">
-      <SectionCard eyebrow="Historique" title="Toutes les entrees">
+      <SectionCard eyebrow="Historique" title="Toutes les entrées">
         <HistoryFilters
           onSourceChange={setSelectedSource}
           onTypeChange={setSelectedType}
@@ -61,8 +61,8 @@ export function HistoriquePage() {
         />
         {filteredEntries.length === 0 ? (
           <EmptyState
-            description="Ajoutez quelques notes depuis l onglet Noter pour remplir votre historique."
-            title="Aucune entree pour ces filtres"
+            description="Ajoutez quelques notes depuis l'onglet Noter pour remplir votre historique."
+            title="Aucune entrée pour ces filtres"
           />
         ) : (
           <div className="history-list">
@@ -78,7 +78,7 @@ export function HistoriquePage() {
                   <span className="history-card__badge">{getSourceTypeLabel(entry.sourceType)}</span>
                 </div>
                 <strong>{getEntryTypeLabel(entry.entryType)}</strong>
-                <p>{summarizeEntry(entry) || 'Entree sans resume.'}</p>
+                <p>{summarizeEntry(entry) || 'Entrée sans résumé.'}</p>
               </button>
             ))}
           </div>

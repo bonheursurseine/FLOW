@@ -70,7 +70,7 @@ export function EntrySheet({ entryType, initialEntry, onClose, onSaved, open }: 
       onSaved?.(saved);
       onClose();
     } catch {
-      setErrors(['Impossible d enregistrer cette entree pour le moment.']);
+      setErrors(["Impossible d'enregistrer cette entrée pour le moment."]);
     } finally {
       setIsSaving(false);
     }
@@ -130,13 +130,13 @@ function renderFields(
         return (
           <>
             <TimeField label="Heure de couche" onChange={(value) => update('bedTime', value)} value={draft.bedTime} />
-            <TimeField label="Heure de reveil" onChange={(value) => update('wakeTime', value)} value={draft.wakeTime} />
+            <TimeField label="Heure de réveil" onChange={(value) => update('wakeTime', value)} value={draft.wakeTime} />
             <ReadOnlyField
-              label="Duree calculee"
+              label="Durée calculée"
               value={calculatedDuration ? `${formatSleepDuration(calculatedDuration)}` : 'Renseignez les deux heures'}
             />
             <NumberField
-              label="Qualite / 10"
+              label="Qualité / 10"
               onChange={(value) => update('sleepQuality', value)}
               value={draft.sleepQuality}
             />
@@ -177,8 +177,8 @@ function renderFields(
             onChange={(value) => update('migraineLevel', parseOptionalEnum<MigraineLevel>(value))}
             options={[
               { value: 'none', label: 'Pas de migraine' },
-              { value: 'mild', label: 'Legere' },
-              { value: 'moderate', label: 'Moderee' },
+              { value: 'mild', label: 'Légère' },
+              { value: 'moderate', label: 'Modérée' },
               { value: 'severe', label: 'Forte' }
             ]}
             value={draft.migraineLevel}
@@ -190,11 +190,11 @@ function renderFields(
           />
           <ToggleField
             checked={Boolean(draft.migraineMedicationTaken)}
-            label="Medicament pris"
+            label="Médicament pris"
             onChange={(checked) => update('migraineMedicationTaken', checked)}
           />
           <TextAreaField
-            label="Note medicament"
+            label="Note médicament"
             onChange={(value) => update('migraineMedicationNote', value)}
             value={draft.migraineMedicationNote}
           />
@@ -216,12 +216,12 @@ function renderFields(
       return (
         <>
           <SelectField
-            label="Activite physique"
+            label="Activité physique"
             onChange={(value) => update('physicalActivityLevel', parseOptionalEnum<PhysicalActivityLevel>(value))}
             options={[
               { value: 'none', label: 'Aucune' },
-              { value: 'light', label: 'Legere' },
-              { value: 'moderate', label: 'Moderee' },
+              { value: 'light', label: 'Légère' },
+              { value: 'moderate', label: 'Modérée' },
               { value: 'intense', label: 'Intense' }
             ]}
             value={draft.physicalActivityLevel}
@@ -236,7 +236,7 @@ function renderFields(
             label="Type de repas"
             onChange={(value) => update('mealType', parseOptionalEnum<MealType>(value))}
             options={[
-              { value: 'light', label: 'Leger' },
+              { value: 'light', label: 'Léger' },
               { value: 'normal', label: 'Normal' },
               { value: 'heavy', label: 'Copieux' }
             ]}
@@ -249,7 +249,7 @@ function renderFields(
       return (
         <>
           <NumberField
-            label="Duree de sieste (minutes)"
+            label="Durée de sieste (minutes)"
             onChange={(value) => update('napDuration', value)}
             value={draft.napDuration}
           />
@@ -260,13 +260,13 @@ function renderFields(
       return (
         <>
           <SelectField
-            label="Temps d ecran"
+            label="Temps d'écran"
             onChange={(value) => update('screenTimeLevel', parseOptionalEnum<ScreenTimeLevel>(value))}
             options={[
               { value: 'low', label: 'Faible' },
               { value: 'medium', label: 'Moyen' },
-              { value: 'high', label: 'Eleve' },
-              { value: 'veryHigh', label: 'Tres eleve' }
+              { value: 'high', label: 'Élevé' },
+              { value: 'veryHigh', label: 'Très élevé' }
             ]}
             value={draft.screenTimeLevel}
           />
@@ -277,7 +277,7 @@ function renderFields(
       return (
         <>
           <TextAreaField
-            label="Note medicament"
+            label="Note médicament"
             onChange={(value) => update('medicationNote', value)}
             value={draft.medicationNote}
           />
@@ -288,7 +288,7 @@ function renderFields(
       return (
         <>
           <NumberField
-            label="Duree de meditation (minutes)"
+            label="Durée de méditation (minutes)"
             onChange={(value) => update('meditationDuration', value)}
             value={draft.meditationDuration}
           />
@@ -299,7 +299,7 @@ function renderFields(
       return (
         <>
           <TextAreaField
-            label="Evenement"
+            label="Événement"
             onChange={(value) => update('eventNote', value)}
             value={draft.eventNote}
           />
@@ -317,7 +317,7 @@ function renderFields(
     default:
       return (
         <>
-          <NumberField label="Energie / 10" onChange={(value) => update('energyScore', value)} value={draft.energyScore} />
+          <NumberField label="Énergie / 10" onChange={(value) => update('energyScore', value)} value={draft.energyScore} />
           <NumberField label="Stress / 10" onChange={(value) => update('stressLevel', value)} value={draft.stressLevel} />
           <TextAreaField label="Commentaire" onChange={(value) => update('comment', value)} value={draft.comment} />
         </>

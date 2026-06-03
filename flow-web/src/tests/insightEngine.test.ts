@@ -8,8 +8,8 @@ describe('insightEngine', () => {
     const insights = generateInsights([]);
 
     expect(insights).toHaveLength(1);
-    expect(insights[0].title).toBe('Pas assez de donnees');
-    expect(insights[0].message).toContain('Pas assez de donnees');
+    expect(insights[0].title).toBe('Pas assez de données');
+    expect(insights[0].message).toContain('Pas assez de données');
     expect(insights[0].tone).toBe('fallback');
   });
 
@@ -70,9 +70,86 @@ describe('insightEngine', () => {
 
     expect(sleepInsight).toBeDefined();
     expect(sleepInsight?.message).toContain('moins de 6h de sommeil');
-    expect(sleepInsight?.message).toContain('semblent associes');
+    expect(sleepInsight?.message).toContain('semblent associés');
     expect(sleepInsight?.message).not.toContain('cause');
     expect(sleepInsight?.tone).toBe('cautious');
+  });
+
+  it('builds a check-in insight from quick manual check-ins too', () => {
+    const entries = [
+      createEntry({
+        id: 'checkin-1',
+        entryType: 'checkIn',
+        timestamp: '2026-06-01T08:00:00',
+        energyScore: 8,
+        stressLevel: 4
+      }),
+      createEntry({
+        id: 'checkin-2',
+        entryType: 'checkIn',
+        timestamp: '2026-06-01T12:00:00',
+        energyScore: 7,
+        stressLevel: 5
+      }),
+      createEntry({
+        id: 'checkin-3',
+        entryType: 'checkIn',
+        timestamp: '2026-06-01T18:00:00',
+        energyScore: 4,
+        stressLevel: 7
+      }),
+      createEntry({
+        id: 'checkin-4',
+        entryType: 'checkIn',
+        timestamp: '2026-06-02T08:00:00',
+        energyScore: 8,
+        stressLevel: 4
+      }),
+      createEntry({
+        id: 'checkin-5',
+        entryType: 'checkIn',
+        timestamp: '2026-06-02T12:00:00',
+        energyScore: 7,
+        stressLevel: 5
+      }),
+      createEntry({
+        id: 'checkin-6',
+        entryType: 'checkIn',
+        timestamp: '2026-06-02T18:00:00',
+        energyScore: 4,
+        stressLevel: 7
+      }),
+      createEntry({
+        id: 'checkin-7',
+        entryType: 'checkIn',
+        timestamp: '2026-06-03T08:00:00',
+        energyScore: 8,
+        stressLevel: 4
+      }),
+      createEntry({
+        id: 'checkin-8',
+        entryType: 'checkIn',
+        timestamp: '2026-06-03T12:00:00',
+        energyScore: 7,
+        stressLevel: 5
+      }),
+      createEntry({
+        id: 'checkin-9',
+        entryType: 'checkIn',
+        timestamp: '2026-06-03T18:00:00',
+        energyScore: 4,
+        stressLevel: 7
+      })
+    ];
+
+    const insights = generateInsights(entries);
+    const checkInInsight = insights.find((insight) => insight.category === 'checkIn');
+
+    expect(checkInInsight).toBeDefined();
+    expect(checkInInsight?.title).toBe('Check-ins');
+    expect(checkInInsight?.message).toContain('check-ins');
+    expect(checkInInsight?.message).toContain('18h');
+    expect(checkInInsight?.tone).toBe('cautious');
   });
 });
 

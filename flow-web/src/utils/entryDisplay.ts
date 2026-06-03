@@ -9,61 +9,61 @@ import type {
 } from '../types/tracking';
 
 const ENTRY_TYPE_LABELS: Record<EntryType, string> = {
-  caffeine: 'Cafeine',
+  caffeine: 'Caféine',
   checkIn: 'Check-in',
   form: 'Forme',
   freeNote: 'Note libre',
   hydration: 'Hydratation',
   meal: 'Repas',
-  medication: 'Medicament',
-  meditation: 'Meditation',
+  medication: 'Médicament',
+  meditation: 'Méditation',
   mentalLoad: 'Charge mentale',
   migraine: 'Migraine',
   nap: 'Sieste',
-  notableEvent: 'Evenement',
-  physicalActivity: 'Activite physique',
-  screenTime: 'Temps d ecran',
+  notableEvent: 'Événement',
+  physicalActivity: 'Activité physique',
+  screenTime: "Temps d'écran",
   sleep: 'Sommeil',
   stress: 'Stress'
 };
 
 const SOURCE_TYPE_LABELS: Record<SourceType, string> = {
   scheduledCheckIn: 'Programme',
-  spontaneous: 'Spontane'
+  spontaneous: 'Spontané'
 };
 
 const MIGRAINE_LEVEL_LABELS: Record<MigraineLevel, string> = {
-  mild: 'Migraine legere',
-  moderate: 'Migraine moderee',
+  mild: 'Migraine légère',
+  moderate: 'Migraine modérée',
   none: 'Pas de migraine',
   severe: 'Migraine forte'
 };
 
 const CAFFEINE_LEVEL_LABELS: Record<CaffeineLevel, string> = {
-  high: 'Cafeine elevee',
-  low: 'Cafeine legere',
-  medium: 'Cafeine moyenne',
-  none: 'Cafeine absente'
+  high: 'Caféine élevée',
+  low: 'Caféine légère',
+  medium: 'Caféine moyenne',
+  none: 'Caféine absente'
 };
 
 const ACTIVITY_LEVEL_LABELS: Record<PhysicalActivityLevel, string> = {
-  intense: 'Activite intense',
-  light: 'Activite legere',
-  moderate: 'Activite moderee',
-  none: 'Pas d activite'
+  intense: 'Activité intense',
+  light: 'Activité légère',
+  moderate: 'Activité modérée',
+  none: "Pas d'activité"
 };
 
 const MEAL_TYPE_LABELS: Record<MealType, string> = {
   heavy: 'Repas copieux',
-  light: 'Repas leger',
+  light: 'Repas léger',
   normal: 'Repas normal'
 };
 
 const SCREEN_TIME_LEVEL_LABELS: Record<ScreenTimeLevel, string> = {
-  high: 'Temps d ecran eleve',
-  low: 'Temps d ecran faible',
-  medium: 'Temps d ecran moyen',
-  veryHigh: 'Temps d ecran tres eleve'
+  high: "Temps d'écran élevé",
+  low: "Temps d'écran faible",
+  medium: "Temps d'écran moyen",
+  veryHigh: "Temps d'écran très élevé"
 };
 
 export function formatDurationMinutes(minutes: number | undefined): string {
@@ -86,7 +86,7 @@ export function formatDurationMinutes(minutes: number | undefined): string {
 
 export function formatCaffeineCups(cups: number | undefined): string {
   if (typeof cups !== 'number' || Number.isNaN(cups)) {
-    return 'Cafeine';
+    return 'Caféine';
   }
 
   return `${cups} ${cups > 1 ? 'tasses' : 'tasse'}`;
@@ -134,7 +134,7 @@ export function formatScore(value: number | undefined, suffix = '/10'): string {
 }
 
 export function getCaffeineLevelLabel(level: CaffeineLevel | undefined): string {
-  return level ? CAFFEINE_LEVEL_LABELS[level] : 'Cafeine';
+  return level ? CAFFEINE_LEVEL_LABELS[level] : 'Caféine';
 }
 
 export function getEntryTypeLabel(entryType: EntryType): string {
@@ -150,11 +150,11 @@ export function getMigraineLevelLabel(level: MigraineLevel | undefined): string 
 }
 
 export function getPhysicalActivityLevelLabel(level: PhysicalActivityLevel | undefined): string {
-  return level ? ACTIVITY_LEVEL_LABELS[level] : 'Activite physique';
+  return level ? ACTIVITY_LEVEL_LABELS[level] : 'Activité physique';
 }
 
 export function getScreenTimeLevelLabel(level: ScreenTimeLevel | undefined): string {
-  return level ? SCREEN_TIME_LEVEL_LABELS[level] : 'Temps d ecran';
+  return level ? SCREEN_TIME_LEVEL_LABELS[level] : "Temps d'écran";
 }
 
 export function getSourceTypeLabel(sourceType: SourceType): string {

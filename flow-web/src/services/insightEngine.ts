@@ -36,7 +36,7 @@ export function generateInsights(entries: TrackingEntry[]): Insight[] {
       category: 'sleep',
       id: 'sleep-form-pattern',
       message:
-        'Les jours avec moins de 6h de sommeil semblent associes a une forme plus basse que les jours avec 8h ou plus.',
+        'Les jours avec moins de 6h de sommeil semblent associés à une forme plus basse que les jours avec 8h ou plus.',
       supportingCount: shortSleep.count + longSleep.count,
       title: 'Sommeil et forme',
       tone: 'cautious'
@@ -58,7 +58,7 @@ export function generateInsights(entries: TrackingEntry[]): Insight[] {
       category: 'stress',
       id: 'stress-form-pattern',
       message:
-        'Les jours avec un stress eleve semblent associes a une forme plus basse que les jours avec un stress bas.',
+        'Les jours avec un stress élevé semblent associés à une forme plus basse que les jours avec un stress bas.',
       supportingCount: lowStress.count + highStress.count,
       title: 'Stress et forme',
       tone: 'cautious'
@@ -79,9 +79,9 @@ export function generateInsights(entries: TrackingEntry[]): Insight[] {
       insights.push({
         category: 'checkIn',
         id: 'scheduled-energy-dip',
-        message: `Les check-ins programmes suggerent une energie un peu plus basse autour de ${formatHour(lowestHour.hour)}.`,
+        message: `Tes check-ins suggèrent une énergie un peu plus basse autour de ${formatHour(lowestHour.hour)}.`,
         supportingCount: scheduledTrend.reduce((sum, point) => sum + point.count, 0),
-        title: 'Check-ins programmes',
+        title: 'Check-ins',
         tone: 'cautious'
       });
     }
@@ -93,9 +93,9 @@ export function generateInsights(entries: TrackingEntry[]): Insight[] {
         category: 'fallback',
         id: 'not-enough-data',
         message:
-          'Pas assez de donnees pour faire ressortir des tendances fiables pour le moment. Continue quelques entrees sur plusieurs jours pour avoir un premier apercu prudent.',
+          'Pas assez de données pour faire ressortir des tendances fiables pour le moment. Continue quelques entrées sur plusieurs jours pour avoir un premier aperçu prudent.',
         supportingCount: entries.length,
-        title: 'Pas assez de donnees',
+        title: 'Pas assez de données',
         tone: 'fallback'
       }
     ];

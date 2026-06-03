@@ -33,18 +33,18 @@ export function AnalysePage() {
 
   return (
     <main className="app-shell__surface">
-      <SectionCard eyebrow="Analyse" title="Check-ins programmes">
+      <SectionCard eyebrow="Analyse" title="Check-ins">
         {analytics.scheduledCheckIns.energyTrend.length === 0 ? (
           <EmptyState
-            description="Les courbes apparaitront apres quelques check-ins programmes."
-            title="Pas encore de check-ins programmes"
+            description="Les courbes apparaîtront après quelques check-ins enregistrés."
+            title="Pas encore de check-ins"
           />
         ) : (
           <div className="chart-stack">
             <ChartBlock
               data={analytics.scheduledCheckIns.energyTrend}
-              lineKeys={[{ key: 'average', label: 'Energie', color: '#4f7a67' }]}
-              title="Energie dans le temps"
+              lineKeys={[{ key: 'average', label: 'Énergie', color: '#4f7a67' }]}
+              title="Énergie dans le temps"
               xKey="date"
             />
             <ChartBlock
@@ -52,7 +52,7 @@ export function AnalysePage() {
                 ...point,
                 hourLabel: formatHourLabel(point.hour)
               }))}
-              title="Moyenne energie par heure"
+              title="Moyenne énergie par heure"
               xKey="hourLabel"
             />
             <ChartBlock
@@ -71,8 +71,8 @@ export function AnalysePage() {
       <SectionCard eyebrow="Forme" title="Tendances et comparaisons">
         {analytics.form.dailyAverage.length === 0 ? (
           <EmptyState
-            description="Ajoutez quelques entrees de forme pour commencer a voir les tendances."
-            title="Pas encore de donnees de forme"
+            description="Ajoutez quelques entrées de forme pour commencer à voir les tendances."
+            title="Pas encore de données de forme"
           />
         ) : (
           <div className="chart-stack">
@@ -89,18 +89,18 @@ export function AnalysePage() {
         )}
       </SectionCard>
 
-      <SectionCard eyebrow="Migraine" title="Frequence et intensite">
+      <SectionCard eyebrow="Migraine" title="Fréquence et intensité">
         {analytics.migraine.frequency.totalEpisodes === 0 ? (
           <EmptyState
-            description="Les cartes migraines s activeront des que vous noterez un premier episode."
-            title="Aucun episode de migraine"
+            description="Les cartes migraines s'activeront dès que vous noterez un premier épisode."
+            title="Aucun épisode de migraine"
           />
         ) : (
           <div className="chart-stack">
             <div className="stat-grid">
-              <StatTile label="Episodes" value={String(analytics.migraine.frequency.totalEpisodes)} />
+              <StatTile label="Épisodes" value={String(analytics.migraine.frequency.totalEpisodes)} />
               <StatTile
-                label="Jours avec episode"
+                label="Jours avec épisode"
                 value={String(analytics.migraine.frequency.daysWithEpisodes)}
               />
               <StatTile
@@ -117,26 +117,26 @@ export function AnalysePage() {
               title="Douleur moyenne par heure"
               xKey="hourLabel"
             />
-            <ChartBlock data={analytics.migraine.vsStress} title="Episodes vs stress" xKey="label" />
-            <ChartBlock data={analytics.migraine.vsCaffeine} title="Episodes vs cafeine" xKey="label" />
+            <ChartBlock data={analytics.migraine.vsStress} title="Épisodes vs stress" xKey="label" />
+            <ChartBlock data={analytics.migraine.vsCaffeine} title="Épisodes vs caféine" xKey="label" />
           </div>
         )}
       </SectionCard>
 
-      <SectionCard eyebrow="Meditation" title="Pratique par semaine">
+      <SectionCard eyebrow="Méditation" title="Pratique par semaine">
         {analytics.meditation.totalSessions === 0 ? (
           <EmptyState
-            description="Ajoutez vos seances pour faire apparaitre cette section."
-            title="Aucune seance de meditation"
+            description="Ajoutez vos séances pour faire apparaître cette section."
+            title="Aucune séance de méditation"
           />
         ) : (
           <div className="chart-stack">
             <div className="stat-grid">
-              <StatTile label="Seances" value={String(analytics.meditation.totalSessions)} />
+              <StatTile label="Séances" value={String(analytics.meditation.totalSessions)} />
               <StatTile label="Minutes totales" value={String(analytics.meditation.totalMinutes)} />
               <StatTile label="Moyenne" value={`${analytics.meditation.averageMinutes} min`} />
             </div>
-            <ChartBlock data={analytics.meditation.weekly} title="Meditation par semaine" xKey="weekStart" />
+            <ChartBlock data={analytics.meditation.weekly} title="Méditation par semaine" xKey="weekStart" />
           </div>
         )}
       </SectionCard>

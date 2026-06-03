@@ -25,10 +25,10 @@ export function QuickCheckInCard({ onSaved }: QuickCheckInCardProps) {
           stressLevel
         })
       );
-      setFeedback('Check-in enregistre.');
+      setFeedback('Check-in enregistré.');
       onSaved?.();
     } catch {
-      setFeedback('Impossible d enregistrer ce check-in pour le moment.');
+      setFeedback("Impossible d'enregistrer ce check-in pour le moment.");
     } finally {
       setIsSaving(false);
     }
@@ -41,7 +41,7 @@ export function QuickCheckInCard({ onSaved }: QuickCheckInCardProps) {
       </h1>
       <div className="quick-check-in">
         <RangeField
-          label={`Energie ${energyScore}/10`}
+          label={`Énergie ${energyScore}/10`}
           max={10}
           min={1}
           onChange={setEnergyScore}

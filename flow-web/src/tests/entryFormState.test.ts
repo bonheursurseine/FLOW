@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  ENTRY_CARD_DEFINITIONS,
   createDraftFromEntry,
   createQuickCheckInDraft,
   normalizeEntryDraft,
@@ -41,7 +42,7 @@ describe('entryFormState', () => {
       freeNote: '   '
     });
 
-    expect(errors).toEqual(['Ajoutez une note avant d enregistrer.']);
+    expect(errors).toEqual(["Ajoutez une note avant d'enregistrer."]);
   });
 
   it('prefills a draft from an existing entry without losing its values', () => {
@@ -97,7 +98,7 @@ describe('entryFormState', () => {
       wakeTime: '   '
     });
 
-    expect(errors).toEqual(['Ajoutez des heures, une qualite ou un commentaire.']);
+    expect(errors).toEqual(['Ajoutez des heures, une qualité ou un commentaire.']);
   });
 
   it('keeps hydration in cl and caffeine in cup counts', () => {
@@ -128,5 +129,25 @@ describe('entryFormState', () => {
 
     expect(normalized.caffeineCups).toBe(0);
     expect(validateEntryDraft(normalized)).toEqual([]);
+  });
+
+  it('defines card titles and descriptions with emojis and French punctuation', () => {
+    expect(ENTRY_CARD_DEFINITIONS).toEqual([
+      { entryType: 'form', title: '😌 Forme', description: 'Noter votre niveau de forme du moment.' },
+      { entryType: 'sleep', title: '😴 Sommeil', description: 'Durée, qualité et ressenti du sommeil.' },
+      { entryType: 'hydration', title: '💧 Hydratation', description: 'Tracer une quantité bue en cL.' },
+      { entryType: 'stress', title: '😵 Stress', description: 'Noter le stress du moment.' },
+      { entryType: 'mentalLoad', title: '🧠 Charge mentale', description: 'Évaluer la charge mentale ressentie.' },
+      { entryType: 'migraine', title: '🤕 Migraine', description: 'Épisode, intensité et contexte migraineux.' },
+      { entryType: 'caffeine', title: '☕ Caféine', description: 'Tracer un nombre de tasses de caféine.' },
+      { entryType: 'physicalActivity', title: '🏃 Activité physique', description: "Noter l'intensité de l'activité." },
+      { entryType: 'meal', title: '🍽️ Repas', description: 'Documenter un repas léger ou copieux.' },
+      { entryType: 'nap', title: '😴 Sieste', description: 'Noter une sieste et sa durée.' },
+      { entryType: 'screenTime', title: "📱 Temps d'écran", description: "Suivre un niveau d'exposition aux écrans." },
+      { entryType: 'medication', title: '💊 Médicament', description: "Garder une trace d'une prise." },
+      { entryType: 'meditation', title: '🧘 Méditation', description: 'Noter une séance et sa durée.' },
+      { entryType: 'notableEvent', title: '✨ Événement', description: 'Capturer un événement marquant.' },
+      { entryType: 'freeNote', title: '📝 Note libre', description: 'Écrire une note rapide sans cadre.' }
+    ]);
   });
 });

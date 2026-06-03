@@ -14,7 +14,7 @@ import {
 import type { TrackingEntry } from '../types/tracking';
 
 describe('analyticsService', () => {
-  it('averages scheduled check-in energy and stress by hour', () => {
+  it('averages check-in energy and stress by hour regardless of source', () => {
     const entries = [
       createEntry({
         id: 'checkin-1',
@@ -51,12 +51,12 @@ describe('analyticsService', () => {
     ];
 
     expect(averageEnergyByHour(entries)).toEqual([
-      { average: 7, count: 2, hour: 8 },
+      { average: 8, count: 3, hour: 8 },
       { average: 5, count: 1, hour: 12 }
     ]);
 
     expect(averageStressByHour(entries)).toEqual([
-      { average: 3, count: 2, hour: 8 },
+      { average: 2.33, count: 3, hour: 8 },
       { average: 7, count: 1, hour: 12 }
     ]);
   });
@@ -132,12 +132,12 @@ describe('analyticsService', () => {
 
     expect(compareFormWithStress(entries)).toEqual([
       { average: 8, count: 1, key: 'low', label: 'Stress bas (1-3)' },
-      { average: 4, count: 1, key: 'high', label: 'Stress eleve (7-10)' }
+      { average: 4, count: 1, key: 'high', label: 'Stress élevé (7-10)' }
     ]);
 
     expect(compareFormWithMentalLoad(entries)).toEqual([
       { average: 8, count: 1, key: 'low', label: 'Charge basse (1-3)' },
-      { average: 4, count: 1, key: 'high', label: 'Charge elevee (7-10)' }
+      { average: 4, count: 1, key: 'high', label: 'Charge élevée (7-10)' }
     ]);
   });
 
@@ -241,7 +241,7 @@ describe('analyticsService', () => {
       ],
       vsStress: [
         { averageEpisodes: 1, count: 1, key: 'low', label: 'Stress bas (1-3)' },
-        { averageEpisodes: 1, count: 2, key: 'high', label: 'Stress eleve (7-10)' }
+        { averageEpisodes: 1, count: 2, key: 'high', label: 'Stress élevé (7-10)' }
       ]
     });
 

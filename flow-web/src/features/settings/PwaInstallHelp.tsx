@@ -9,12 +9,12 @@ export function PwaInstallHelp({ pwaStatus }: PwaInstallHelpProps) {
     <div className="settings-card">
       <div className="settings-card__row">
         <strong>Installation PWA</strong>
-        <span className="history-card__badge">{pwaStatus.installed ? 'Installee' : 'Safari'}</span>
+        <span className="history-card__badge">{pwaStatus.installed ? 'Installée' : 'Safari'}</span>
       </div>
       <p>
         {pwaStatus.installed
-          ? 'FLOW tourne deja en mode installe.'
-          : 'Installez FLOW depuis Safari pour une experience plus proche d une app quotidienne.'}
+          ? 'FLOW tourne déjà en mode installé.'
+          : "Installez FLOW depuis Safari pour une expérience plus proche d'une app quotidienne."}
       </p>
       {!pwaStatus.installed ? (
         <ol className="settings-list">

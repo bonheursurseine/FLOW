@@ -16,14 +16,14 @@ const ENTRY_TYPE_OPTIONS: Array<{ label: string; value: EntryType | 'all' }> = [
   { value: 'stress', label: 'Stress' },
   { value: 'mentalLoad', label: 'Charge mentale' },
   { value: 'migraine', label: 'Migraine' },
-  { value: 'caffeine', label: 'Cafeine' },
-  { value: 'physicalActivity', label: 'Activite physique' },
+  { value: 'caffeine', label: 'Caféine' },
+  { value: 'physicalActivity', label: 'Activité physique' },
   { value: 'meal', label: 'Repas' },
   { value: 'nap', label: 'Sieste' },
-  { value: 'screenTime', label: 'Temps d ecran' },
-  { value: 'medication', label: 'Medicament' },
-  { value: 'meditation', label: 'Meditation' },
-  { value: 'notableEvent', label: 'Evenement' },
+  { value: 'screenTime', label: "Temps d'écran" },
+  { value: 'medication', label: 'Médicament' },
+  { value: 'meditation', label: 'Méditation' },
+  { value: 'notableEvent', label: 'Événement' },
   { value: 'freeNote', label: 'Note libre' }
 ];
 
@@ -52,7 +52,7 @@ export function HistoryFilters({
           value={selectedSource}
         >
           <option value="all">Toutes</option>
-          <option value="spontaneous">Spontane</option>
+          <option value="spontaneous">Spontané</option>
           <option value="scheduledCheckIn">Programme</option>
         </select>
       </label>

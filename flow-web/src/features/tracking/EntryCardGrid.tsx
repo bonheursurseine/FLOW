@@ -15,7 +15,7 @@ export function EntryCardGrid({ onSelect, visibleEntryTypes }: EntryCardGridProp
   return (
     <section aria-labelledby="entry-grid-title" className="status-card">
       <div>
-        <p className="status-label">Entrees spontanees</p>
+        <p className="status-label">Entrées spontanées</p>
         <h2 id="entry-grid-title">Choisissez une carte</h2>
       </div>
       <div className="entry-card-grid">

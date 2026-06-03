@@ -116,7 +116,7 @@ export function ReglagesPage() {
   }
 
   async function handleReset() {
-    if (!window.confirm('Effacer toutes les donnees locales de FLOW sur cet appareil ?')) {
+    if (!window.confirm('Effacer toutes les données locales de FLOW sur cet appareil ?')) {
       return;
     }
 
@@ -131,9 +131,9 @@ export function ReglagesPage() {
 
   return (
     <main className="app-shell__surface">
-      <SectionCard eyebrow="Reglages" title="Rappels et affichage">
+      <SectionCard eyebrow="Réglages" title="Rappels et affichage">
         <div className="settings-card">
-          <strong>Cartes visibles sur l accueil</strong>
+          <strong>Cartes visibles sur l'accueil</strong>
           <div className="toggle-grid">
             {TOGGLE_TYPES.map((entryType) => {
               const isActive = settings?.visibleHomeEntryTypes.includes(entryType) ?? false;
@@ -162,7 +162,7 @@ export function ReglagesPage() {
               value={newScheduleLabel}
             />
             <button className="quick-check-in__action" onClick={() => void handleSaveSchedule()} type="button">
-              {editingScheduleId ? 'Mettre a jour' : 'Ajouter'}
+              {editingScheduleId ? 'Mettre à jour' : 'Ajouter'}
             </button>
           </div>
           <div className="schedule-list">
@@ -174,10 +174,10 @@ export function ReglagesPage() {
                 </div>
                 <div className="schedule-item__actions">
                   <button className="entry-sheet__secondary" onClick={() => handleStartScheduleEdit(schedule)} type="button">
-                    Editer
+                    Éditer
                   </button>
                   <button className="entry-sheet__secondary" onClick={() => void handleToggleSchedule(schedule)} type="button">
-                    {schedule.isEnabled ? 'Desactiver' : 'Activer'}
+                    {schedule.isEnabled ? 'Désactiver' : 'Activer'}
                   </button>
                   <button className="entry-sheet__secondary" onClick={() => void handleDeleteSchedule(schedule)} type="button">
                     Supprimer
@@ -185,7 +185,7 @@ export function ReglagesPage() {
                 </div>
               </div>
             ))}
-            {schedules.length === 0 ? <p className="status-copy">Aucun horaire configure pour le moment.</p> : null}
+            {schedules.length === 0 ? <p className="status-copy">Aucun horaire configuré pour le moment.</p> : null}
           </div>
         </div>
 
@@ -196,9 +196,9 @@ export function ReglagesPage() {
         />
         <PwaInstallHelp pwaStatus={pwaStatus} />
         <div className="settings-card">
-          <strong>Confidentialite</strong>
+          <strong>Confidentialité</strong>
           <p>
-            FLOW reste 100% local dans cette V1 web: pas de compte, pas de backend, pas de synchronisation, pas d analytics externes.
+            FLOW reste 100% local dans cette V1 web: pas de compte, pas de backend, pas de synchronisation, pas d'analytics externes.
           </p>
         </div>
         <LocalDataReset onReset={() => void handleReset()} />

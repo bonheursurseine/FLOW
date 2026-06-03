@@ -95,21 +95,21 @@ const SLEEP_DURATION_BUCKETS: Array<NumericBucket<'under-6' | '6-to-8' | '8-plus
 ];
 
 const QUALITY_BUCKETS: Array<NumericBucket<'low' | 'medium' | 'high'>> = [
-  { key: 'low', label: 'Qualite basse (1-3)', matches: (value) => value <= 3 },
-  { key: 'medium', label: 'Qualite moyenne (4-6)', matches: (value) => value >= 4 && value <= 6 },
-  { key: 'high', label: 'Qualite haute (7-10)', matches: (value) => value >= 7 }
+  { key: 'low', label: 'Qualité basse (1-3)', matches: (value) => value <= 3 },
+  { key: 'medium', label: 'Qualité moyenne (4-6)', matches: (value) => value >= 4 && value <= 6 },
+  { key: 'high', label: 'Qualité haute (7-10)', matches: (value) => value >= 7 }
 ];
 
 const STRESS_BUCKETS: Array<NumericBucket<'low' | 'medium' | 'high'>> = [
   { key: 'low', label: 'Stress bas (1-3)', matches: (value) => value <= 3 },
   { key: 'medium', label: 'Stress moyen (4-6)', matches: (value) => value >= 4 && value <= 6 },
-  { key: 'high', label: 'Stress eleve (7-10)', matches: (value) => value >= 7 }
+  { key: 'high', label: 'Stress élevé (7-10)', matches: (value) => value >= 7 }
 ];
 
 const MENTAL_LOAD_BUCKETS: Array<NumericBucket<'low' | 'medium' | 'high'>> = [
   { key: 'low', label: 'Charge basse (1-3)', matches: (value) => value <= 3 },
   { key: 'medium', label: 'Charge moyenne (4-6)', matches: (value) => value >= 4 && value <= 6 },
-  { key: 'high', label: 'Charge elevee (7-10)', matches: (value) => value >= 7 }
+  { key: 'high', label: 'Charge élevée (7-10)', matches: (value) => value >= 7 }
 ];
 
 const CAFFEINE_CUP_BUCKETS: Array<NumericBucket<'none' | 'low' | 'high'>> = [
@@ -205,11 +205,11 @@ export function analyzeMigraine(entries: TrackingEntry[]): MigraineAnalytics {
 }
 
 export function averageEnergyByHour(entries: TrackingEntry[]) {
-  return groupAverageByHour(scheduledCheckIns(entries), (entry) => entry.energyScore);
+  return groupAverageByHour(checkIns(entries), (entry) => entry.energyScore);
 }
 
 export function averageStressByHour(entries: TrackingEntry[]) {
-  return groupAverageByHour(scheduledCheckIns(entries), (entry) => entry.stressLevel);
+  return groupAverageByHour(checkIns(entries), (entry) => entry.stressLevel);
 }
 
 export function compareFormWithMentalLoad(entries: TrackingEntry[]) {
@@ -260,11 +260,11 @@ export function formTrend(entries: TrackingEntry[], dayCount: number, anchorDate
 }
 
 export function scheduledCheckInEnergyTrend(entries: TrackingEntry[]): DailyAveragePoint[] {
-  return groupAverageByDate(scheduledCheckIns(entries), (entry) => entry.energyScore);
+  return groupAverageByDate(checkIns(entries), (entry) => entry.energyScore);
 }
 
 export function scheduledCheckInStressTrend(entries: TrackingEntry[]): DailyAveragePoint[] {
-  return groupAverageByDate(scheduledCheckIns(entries), (entry) => entry.stressLevel);
+  return groupAverageByDate(checkIns(entries), (entry) => entry.stressLevel);
 }
 
 function compareDailyCountsWithCategory<TKey extends string>(
@@ -381,8 +381,6 @@ function resolveBucket<TKey extends string>(value: number, buckets: Array<Numeri
   return buckets.find((bucket) => bucket.matches(value));
 }
 
-function scheduledCheckIns(entries: TrackingEntry[]): TrackingEntry[] {
-  return entries.filter(
-    (entry) => entry.entryType === 'checkIn' && entry.sourceType === 'scheduledCheckIn'
-  );
+function checkIns(entries: TrackingEntry[]): TrackingEntry[] {
+  return entries.filter((entry) => entry.entryType === 'checkIn');
 }

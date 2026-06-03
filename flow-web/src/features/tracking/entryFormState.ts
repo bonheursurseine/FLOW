@@ -7,21 +7,21 @@ export interface EntryCardDefinition {
 }
 
 export const ENTRY_CARD_DEFINITIONS: EntryCardDefinition[] = [
-  { entryType: 'form', title: 'Forme', description: 'Noter votre niveau de forme du moment.' },
-  { entryType: 'sleep', title: 'Sommeil', description: 'Duree, qualite et ressenti de sommeil.' },
-  { entryType: 'hydration', title: 'Hydratation', description: 'Tracer une quantite bue en cL.' },
-  { entryType: 'stress', title: 'Stress', description: 'Noter le stress du moment.' },
-  { entryType: 'mentalLoad', title: 'Charge mentale', description: 'Evaluer la charge mentale ressentie.' },
-  { entryType: 'migraine', title: 'Migraine', description: 'Episode, intensite et contexte migraineux.' },
-  { entryType: 'caffeine', title: 'Cafeine', description: 'Tracer un nombre de tasses de cafeine.' },
-  { entryType: 'physicalActivity', title: 'Activite physique', description: 'Noter l intensite de l activite.' },
-  { entryType: 'meal', title: 'Repas', description: 'Documenter un repas leger ou copieux.' },
-  { entryType: 'nap', title: 'Sieste', description: 'Noter une sieste et sa duree.' },
-  { entryType: 'screenTime', title: 'Temps d ecran', description: 'Suivre un niveau d exposition ecran.' },
-  { entryType: 'medication', title: 'Medicament', description: 'Garder une trace d une prise.' },
-  { entryType: 'meditation', title: 'Meditation', description: 'Noter une seance et sa duree.' },
-  { entryType: 'notableEvent', title: 'Evenement', description: 'Capturer un evenement marquant.' },
-  { entryType: 'freeNote', title: 'Note libre', description: 'Ecrire une note rapide sans cadre.' }
+  { entryType: 'form', title: '😌 Forme', description: 'Noter votre niveau de forme du moment.' },
+  { entryType: 'sleep', title: '😴 Sommeil', description: 'Durée, qualité et ressenti du sommeil.' },
+  { entryType: 'hydration', title: '💧 Hydratation', description: 'Tracer une quantité bue en cL.' },
+  { entryType: 'stress', title: '😵 Stress', description: 'Noter le stress du moment.' },
+  { entryType: 'mentalLoad', title: '🧠 Charge mentale', description: 'Évaluer la charge mentale ressentie.' },
+  { entryType: 'migraine', title: '🤕 Migraine', description: 'Épisode, intensité et contexte migraineux.' },
+  { entryType: 'caffeine', title: '☕ Caféine', description: 'Tracer un nombre de tasses de caféine.' },
+  { entryType: 'physicalActivity', title: '🏃 Activité physique', description: "Noter l'intensité de l'activité." },
+  { entryType: 'meal', title: '🍽️ Repas', description: 'Documenter un repas léger ou copieux.' },
+  { entryType: 'nap', title: '😴 Sieste', description: 'Noter une sieste et sa durée.' },
+  { entryType: 'screenTime', title: "📱 Temps d'écran", description: "Suivre un niveau d'exposition aux écrans." },
+  { entryType: 'medication', title: '💊 Médicament', description: "Garder une trace d'une prise." },
+  { entryType: 'meditation', title: '🧘 Méditation', description: 'Noter une séance et sa durée.' },
+  { entryType: 'notableEvent', title: '✨ Événement', description: 'Capturer un événement marquant.' },
+  { entryType: 'freeNote', title: '📝 Note libre', description: 'Écrire une note rapide sans cadre.' }
 ];
 
 const SCORE_MIN = 1;
@@ -195,13 +195,13 @@ export function validateEntryDraft(draft: TrackingEntryDraft): string[] {
 
   switch (normalized.entryType) {
     case 'checkIn':
-      return requireFields(normalized, ['energyScore', 'stressLevel'], 'Le check-in rapide demande energie et stress.');
+      return requireFields(normalized, ['energyScore', 'stressLevel'], 'Le check-in rapide demande énergie et stress.');
     case 'form':
       return requireOne(normalized, ['energyScore', 'comment'], 'Ajoutez une note de forme ou un commentaire.');
     case 'sleep':
       return validateSleepDraft(normalized);
     case 'hydration':
-      return requireOne(normalized, ['hydrationAmountCl', 'comment'], 'Ajoutez une quantite d hydratation ou un commentaire.');
+      return requireOne(normalized, ['hydrationAmountCl', 'comment'], "Ajoutez une quantité d'hydratation ou un commentaire.");
     case 'stress':
       return requireOne(normalized, ['stressLevel', 'comment'], 'Ajoutez un niveau de stress ou un commentaire.');
     case 'mentalLoad':
@@ -218,27 +218,27 @@ export function validateEntryDraft(draft: TrackingEntryDraft): string[] {
       return requireOne(
         normalized,
         ['physicalActivityLevel', 'comment'],
-        'Ajoutez un niveau d activite ou un commentaire.'
+        "Ajoutez un niveau d'activité ou un commentaire."
       );
     case 'meal':
       return requireOne(normalized, ['mealType', 'comment'], 'Ajoutez un type de repas ou un commentaire.');
     case 'nap':
-      return requireOne(normalized, ['napDuration', 'comment'], 'Ajoutez une duree de sieste ou un commentaire.');
+      return requireOne(normalized, ['napDuration', 'comment'], 'Ajoutez une durée de sieste ou un commentaire.');
     case 'screenTime':
-      return requireOne(normalized, ['screenTimeLevel', 'comment'], 'Ajoutez un niveau d ecran ou un commentaire.');
+      return requireOne(normalized, ['screenTimeLevel', 'comment'], "Ajoutez un niveau d'écran ou un commentaire.");
     case 'medication':
       return requireOne(normalized, ['medicationNote', 'comment'], 'Ajoutez une note de medicament ou un commentaire.');
     case 'meditation':
       return requireOne(
         normalized,
         ['meditationDuration', 'comment'],
-        'Ajoutez une duree de meditation ou un commentaire.'
+        'Ajoutez une durée de méditation ou un commentaire.'
       );
     case 'notableEvent':
       return requireOne(normalized, ['eventNote', 'comment'], 'Ajoutez un evenement ou un commentaire.');
     case 'freeNote':
     default:
-      return requireOne(normalized, ['freeNote', 'comment'], 'Ajoutez une note avant d enregistrer.');
+      return requireOne(normalized, ['freeNote', 'comment'], "Ajoutez une note avant d'enregistrer.");
   }
 }
 
@@ -356,5 +356,5 @@ function requireOne(
 function validateSleepDraft(draft: TrackingEntryDraft): string[] {
   return hasValue(draft.sleepDuration) || hasValue(draft.sleepQuality) || hasValue(draft.comment)
     ? []
-    : ['Ajoutez des heures, une qualite ou un commentaire.'];
+    : ['Ajoutez des heures, une qualité ou un commentaire.'];
 }

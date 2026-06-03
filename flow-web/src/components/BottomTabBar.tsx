@@ -4,7 +4,7 @@ const TAB_ITEMS = [
   { to: '/', label: 'Noter' },
   { to: '/historique', label: 'Historique' },
   { to: '/analyse', label: 'Analyse' },
-  { to: '/reglages', label: 'Reglages' }
+  { to: '/reglages', label: 'Réglages' }
 ];
 
 export function BottomTabBar() {

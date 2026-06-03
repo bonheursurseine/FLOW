@@ -24,8 +24,8 @@ export function detectPwaStatus(): PwaStatusSnapshot {
     instructions: [
       'Ouvrez FLOW dans Safari sur iPhone.',
       'Touchez le bouton de partage.',
-      'Choisissez "Sur l ecran d accueil".',
-      'Lancez ensuite FLOW depuis son icone pour une experience plus proche d une app.'
+      "Choisissez \"Sur l'écran d'accueil\".",
+      "Lancez ensuite FLOW depuis son icône pour une expérience plus proche d'une app."
     ],
     installed
   };

@@ -7,8 +7,8 @@ describe('EntrySheet', () => {
     render(<EntrySheet entryType="sleep" onClose={() => undefined} open={true} />);
 
     expect(screen.getByLabelText('Heure de couche').getAttribute('type')).toBe('time');
-    expect(screen.getByLabelText('Heure de reveil').getAttribute('type')).toBe('time');
-    expect(screen.queryByLabelText('Duree de sommeil (heures)')).toBeNull();
+    expect(screen.getByLabelText('Heure de réveil').getAttribute('type')).toBe('time');
+    expect(screen.queryByLabelText('Durée de sommeil (heures)')).toBeNull();
     expect(screen.getByDisplayValue('Renseignez les deux heures')).not.toBeNull();
   });
 
@@ -16,7 +16,7 @@ describe('EntrySheet', () => {
     render(<EntrySheet entryType="sleep" onClose={() => undefined} open={true} />);
 
     fireEvent.change(screen.getByLabelText('Heure de couche'), { target: { value: '23:15' } });
-    fireEvent.change(screen.getByLabelText('Heure de reveil'), { target: { value: '07:00' } });
+    fireEvent.change(screen.getByLabelText('Heure de réveil'), { target: { value: '07:00' } });
 
     expect(screen.getByDisplayValue('7 h 45 min')).not.toBeNull();
   });
@@ -33,5 +33,19 @@ describe('EntrySheet', () => {
 
     expect(screen.getByLabelText('Nombre de tasses').getAttribute('type')).toBe('number');
     expect(screen.queryByRole('combobox')).toBeNull();
+  });
+
+  it('shows accented labels for activity and screen time entries', () => {
+    const { rerender } = render(<EntrySheet entryType="physicalActivity" onClose={() => undefined} open={true} />);
+
+    expect(screen.getByRole('combobox', { name: 'Activité physique' })).not.toBeNull();
+    expect(screen.getByRole('option', { name: 'Légère' })).not.toBeNull();
+    expect(screen.getByRole('option', { name: 'Modérée' })).not.toBeNull();
+
+    rerender(<EntrySheet entryType="screenTime" onClose={() => undefined} open={true} />);
+
+    expect(screen.getByRole('combobox', { name: "Temps d'écran" })).not.toBeNull();
+    expect(screen.getByRole('option', { name: 'Élevé' })).not.toBeNull();
+    expect(screen.getByRole('option', { name: 'Très élevé' })).not.toBeNull();
   });
 });

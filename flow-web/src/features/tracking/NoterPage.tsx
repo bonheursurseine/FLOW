@@ -27,12 +27,12 @@ export function NoterPage() {
   }
 
   function handleSaved() {
-    setFeedback('Entree enregistree localement.');
+    setFeedback('Entrée enregistrée localement.');
   }
 
   return (
     <main className="app-shell__surface">
-      <QuickCheckInCard onSaved={() => setFeedback('Check-in rapide enregistre.')} />
+      <QuickCheckInCard onSaved={() => setFeedback('Check-in rapide enregistré.')} />
       <EntryCardGrid
         onSelect={handleOpen}
         visibleEntryTypes={settings?.visibleHomeEntryTypes.filter((entryType) => entryType !== 'checkIn')}

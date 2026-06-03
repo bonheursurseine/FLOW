@@ -17,7 +17,7 @@ export function summarizeEntry(entry: TrackingEntry): string {
   switch (entry.entryType) {
     case 'checkIn':
       return summarizeParts([
-        `Energie ${formatScore(entry.energyScore)}`,
+        `Énergie ${formatScore(entry.energyScore)}`,
         `Stress ${formatScore(entry.stressLevel)}`
       ]);
     case 'form':
@@ -25,7 +25,7 @@ export function summarizeEntry(entry: TrackingEntry): string {
     case 'sleep':
       return summarizeParts([
         entry.sleepDuration ? `Sommeil ${entry.sleepDuration}h` : undefined,
-        entry.sleepQuality ? `Qualite ${formatScore(entry.sleepQuality)}` : undefined,
+        entry.sleepQuality ? `Qualité ${formatScore(entry.sleepQuality)}` : undefined,
         entry.comment
       ]);
     case 'hydration':
@@ -45,7 +45,7 @@ export function summarizeEntry(entry: TrackingEntry): string {
       ]);
     case 'caffeine':
       return summarizeParts([
-        typeof entry.caffeineCups === 'number' ? `Cafeine ${formatCaffeineCups(entry.caffeineCups)}` : getCaffeineLevelLabel(entry.caffeineLevel),
+        typeof entry.caffeineCups === 'number' ? `Caféine ${formatCaffeineCups(entry.caffeineCups)}` : getCaffeineLevelLabel(entry.caffeineLevel),
         entry.comment
       ]);
     case 'physicalActivity':
@@ -64,8 +64,8 @@ export function summarizeEntry(entry: TrackingEntry): string {
     case 'meditation':
       return summarizeParts([
         entry.meditationDuration
-          ? `Meditation ${formatDurationMinutes(entry.meditationDuration)}`
-          : 'Meditation',
+          ? `Méditation ${formatDurationMinutes(entry.meditationDuration)}`
+          : 'Méditation',
         entry.comment
       ]);
     case 'notableEvent':
