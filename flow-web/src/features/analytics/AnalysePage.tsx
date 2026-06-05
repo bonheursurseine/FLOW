@@ -33,6 +33,24 @@ export function AnalysePage() {
 
   return (
     <main className="app-shell__surface">
+      <SectionCard eyebrow="Hydratation" title="Consommation quotidienne">
+        {analytics.hydration.dailyTotal.length === 0 ? (
+          <EmptyState
+            description="Ajoutez quelques entrées d'hydratation pour voir votre total quotidien."
+            title="Pas encore de données d'hydratation"
+          />
+        ) : (
+          <div className="chart-stack">
+            <ChartBlock
+              barColor="#5a8db8"
+              data={analytics.hydration.dailyLiters}
+              title="Total d'eau par jour (L)"
+              xKey="date"
+            />
+          </div>
+        )}
+      </SectionCard>
+
       <SectionCard eyebrow="Analyse" title="Check-ins">
         {analytics.scheduledCheckIns.energyTrend.length === 0 ? (
           <EmptyState
@@ -59,24 +77,6 @@ export function AnalysePage() {
               data={analytics.scheduledCheckIns.stressTrend}
               lineKeys={[{ key: 'average', label: 'Stress', color: '#b26a4a' }]}
               title="Stress moyen par jour"
-              xKey="date"
-            />
-          </div>
-        )}
-      </SectionCard>
-
-      <SectionCard eyebrow="Hydratation" title="Consommation quotidienne">
-        {analytics.hydration.dailyTotal.length === 0 ? (
-          <EmptyState
-            description="Ajoutez quelques entrées d'hydratation pour voir votre total quotidien."
-            title="Pas encore de données d'hydratation"
-          />
-        ) : (
-          <div className="chart-stack">
-            <ChartBlock
-              barColor="#5a8db8"
-              data={analytics.hydration.dailyLiters}
-              title="Total d'eau par jour (L)"
               xKey="date"
             />
           </div>
