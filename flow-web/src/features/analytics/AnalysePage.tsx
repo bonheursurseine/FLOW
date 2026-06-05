@@ -75,8 +75,8 @@ export function AnalysePage() {
           <div className="chart-stack">
             <ChartBlock
               barColor="#5a8db8"
-              data={analytics.hydration.dailyTotal}
-              title="Total d'eau par jour"
+              data={analytics.hydration.dailyLiters}
+              title="Total d'eau par jour (L)"
               xKey="date"
             />
           </div>

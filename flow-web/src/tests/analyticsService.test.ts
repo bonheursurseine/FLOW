@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import * as analyticsService from '../services/analyticsService';
 import {
   analyzeEntries,
   analyzeMeditation,
@@ -192,6 +193,17 @@ describe('analyticsService', () => {
     expect(dailyHydrationTotal(entries)).toEqual([
       { count: 2, date: '2026-06-01', total: 65 },
       { count: 1, date: '2026-06-02', total: 60 }
+    ]);
+
+    expect(
+      (
+        analyticsService as typeof analyticsService & {
+          dailyHydrationLiters: (entries: TrackingEntry[]) => Array<{ date: string; liters: number }>;
+        }
+      ).dailyHydrationLiters(entries)
+    ).toEqual([
+      { date: '2026-06-01', liters: 0.65 },
+      { date: '2026-06-02', liters: 0.6 }
     ]);
 
     expect(analyzeEntries(entries)).toMatchObject({

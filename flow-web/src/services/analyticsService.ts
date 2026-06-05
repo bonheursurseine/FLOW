@@ -64,6 +64,7 @@ export interface MeditationAnalytics {
 
 export interface AnalyticsSnapshot {
   hydration: {
+    dailyLiters: ReturnType<typeof dailyHydrationLiters>;
     dailyTotal: ReturnType<typeof dailyHydrationTotal>;
   };
   scheduledCheckIns: {
@@ -139,6 +140,7 @@ export function analyzeEntries(entries: TrackingEntry[]): AnalyticsSnapshot {
       trend7d: pickRecentWindow(formDailyAverage, 7)
     },
     hydration: {
+      dailyLiters: dailyHydrationLiters(entries),
       dailyTotal: dailyHydrationTotal(entries)
     },
     meditation: analyzeMeditation(entries),
@@ -268,6 +270,13 @@ export function dailyHydrationTotal(entries: TrackingEntry[]): DailyTotalPoint[]
     entries.filter((entry) => entry.entryType === 'hydration'),
     (entry) => entry.hydrationAmountCl
   );
+}
+
+export function dailyHydrationLiters(entries: TrackingEntry[]): Array<{ date: string; liters: number }> {
+  return dailyHydrationTotal(entries).map((point) => ({
+    date: point.date,
+    liters: round(point.total / 100)
+  }));
 }
 
 export function formTrend(entries: TrackingEntry[], dayCount: number, anchorDateKey?: string): DailyAveragePoint[] {
