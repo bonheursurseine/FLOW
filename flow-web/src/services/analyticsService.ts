@@ -2,9 +2,11 @@ import type { TrackingEntry } from '../types/tracking';
 import {
   average,
   type DailyAveragePoint,
+  type DailyTotalPoint,
   endOfDayDate,
   groupAverageByDate,
   groupAverageByHour,
+  groupSumByDate,
   groupSumByWeek,
   indexDailyValue,
   pickRecentWindow,
@@ -61,6 +63,9 @@ export interface MeditationAnalytics {
 }
 
 export interface AnalyticsSnapshot {
+  hydration: {
+    dailyTotal: ReturnType<typeof dailyHydrationTotal>;
+  };
   scheduledCheckIns: {
     averageEnergyByHour: ReturnType<typeof averageEnergyByHour>;
     averageStressByHour: ReturnType<typeof averageStressByHour>;
@@ -132,6 +137,9 @@ export function analyzeEntries(entries: TrackingEntry[]): AnalyticsSnapshot {
       dailyAverage: formDailyAverage,
       trend30d: pickRecentWindow(formDailyAverage, 30),
       trend7d: pickRecentWindow(formDailyAverage, 7)
+    },
+    hydration: {
+      dailyTotal: dailyHydrationTotal(entries)
     },
     meditation: analyzeMeditation(entries),
     migraine: analyzeMigraine(entries),
@@ -252,6 +260,13 @@ export function dailyFormAverage(entries: TrackingEntry[]): DailyAveragePoint[] 
   return groupAverageByDate(
     entries.filter((entry) => entry.entryType === 'form'),
     (entry) => entry.energyScore
+  );
+}
+
+export function dailyHydrationTotal(entries: TrackingEntry[]): DailyTotalPoint[] {
+  return groupSumByDate(
+    entries.filter((entry) => entry.entryType === 'hydration'),
+    (entry) => entry.hydrationAmountCl
   );
 }
 

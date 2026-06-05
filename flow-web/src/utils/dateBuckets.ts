@@ -6,6 +6,12 @@ export interface DailyAveragePoint {
   date: string;
 }
 
+export interface DailyTotalPoint {
+  count: number;
+  date: string;
+  total: number;
+}
+
 export interface HourlyAveragePoint {
   average: number;
   count: number;
@@ -60,6 +66,33 @@ export function groupAverageByDate(
       average: average(values),
       count: values.length,
       date
+    }))
+    .sort((left, right) => left.date.localeCompare(right.date));
+}
+
+export function groupSumByDate(
+  entries: TrackingEntry[],
+  valueSelector: (entry: TrackingEntry) => number | undefined
+): DailyTotalPoint[] {
+  const grouped = new Map<string, number[]>();
+
+  for (const entry of entries) {
+    const value = valueSelector(entry);
+    if (typeof value !== 'number' || Number.isNaN(value)) {
+      continue;
+    }
+
+    const dateKey = toDateKey(entry.timestamp);
+    const values = grouped.get(dateKey) ?? [];
+    values.push(value);
+    grouped.set(dateKey, values);
+  }
+
+  return Array.from(grouped.entries())
+    .map(([date, values]) => ({
+      count: values.length,
+      date,
+      total: round(values.reduce((sum, value) => sum + value, 0))
     }))
     .sort((left, right) => left.date.localeCompare(right.date));
 }

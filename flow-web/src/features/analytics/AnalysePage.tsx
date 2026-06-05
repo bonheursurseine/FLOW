@@ -56,13 +56,28 @@ export function AnalysePage() {
               xKey="hourLabel"
             />
             <ChartBlock
-              data={analytics.scheduledCheckIns.averageStressByHour.map((point) => ({
-                ...point,
-                hourLabel: formatHourLabel(point.hour)
-              }))}
-              barColor="#b26a4a"
-              title="Moyenne stress par heure"
-              xKey="hourLabel"
+              data={analytics.scheduledCheckIns.stressTrend}
+              lineKeys={[{ key: 'average', label: 'Stress', color: '#b26a4a' }]}
+              title="Stress moyen par jour"
+              xKey="date"
+            />
+          </div>
+        )}
+      </SectionCard>
+
+      <SectionCard eyebrow="Hydratation" title="Consommation quotidienne">
+        {analytics.hydration.dailyTotal.length === 0 ? (
+          <EmptyState
+            description="Ajoutez quelques entrées d'hydratation pour voir votre total quotidien."
+            title="Pas encore de données d'hydratation"
+          />
+        ) : (
+          <div className="chart-stack">
+            <ChartBlock
+              barColor="#5a8db8"
+              data={analytics.hydration.dailyTotal}
+              title="Total d'eau par jour"
+              xKey="date"
             />
           </div>
         )}

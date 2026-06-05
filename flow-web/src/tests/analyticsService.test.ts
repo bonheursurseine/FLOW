@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  analyzeEntries,
   analyzeMeditation,
   analyzeMigraine,
   averageEnergyByHour,
@@ -8,6 +9,7 @@ import {
   compareFormWithMentalLoad,
   compareFormWithSleepDuration,
   compareFormWithStress,
+  dailyHydrationTotal,
   dailyFormAverage,
   formTrend
 } from '../services/analyticsService';
@@ -139,6 +141,73 @@ describe('analyticsService', () => {
       { average: 8, count: 1, key: 'low', label: 'Charge basse (1-3)' },
       { average: 4, count: 1, key: 'high', label: 'Charge élevée (7-10)' }
     ]);
+  });
+
+  it('totals hydration by day and exposes daily analytics for the analyse page', () => {
+    const entries = [
+      createEntry({
+        id: 'hydration-1',
+        entryType: 'hydration',
+        timestamp: '2026-06-01T09:00:00',
+        hydrationAmountCl: 25
+      }),
+      createEntry({
+        id: 'hydration-2',
+        entryType: 'hydration',
+        timestamp: '2026-06-01T15:00:00',
+        hydrationAmountCl: 40
+      }),
+      createEntry({
+        id: 'hydration-3',
+        entryType: 'hydration',
+        timestamp: '2026-06-02T10:00:00',
+        hydrationAmountCl: 60
+      }),
+      createEntry({
+        id: 'checkin-1',
+        entryType: 'checkIn',
+        sourceType: 'scheduledCheckIn',
+        timestamp: '2026-06-01T08:00:00',
+        energyScore: 5,
+        stressLevel: 4
+      }),
+      createEntry({
+        id: 'checkin-2',
+        entryType: 'checkIn',
+        sourceType: 'scheduledCheckIn',
+        timestamp: '2026-06-01T18:00:00',
+        energyScore: 7,
+        stressLevel: 6
+      }),
+      createEntry({
+        id: 'checkin-3',
+        entryType: 'checkIn',
+        sourceType: 'scheduledCheckIn',
+        timestamp: '2026-06-02T08:00:00',
+        energyScore: 8,
+        stressLevel: 3
+      })
+    ];
+
+    expect(dailyHydrationTotal(entries)).toEqual([
+      { count: 2, date: '2026-06-01', total: 65 },
+      { count: 1, date: '2026-06-02', total: 60 }
+    ]);
+
+    expect(analyzeEntries(entries)).toMatchObject({
+      hydration: {
+        dailyTotal: [
+          { count: 2, date: '2026-06-01', total: 65 },
+          { count: 1, date: '2026-06-02', total: 60 }
+        ]
+      },
+      scheduledCheckIns: {
+        stressTrend: [
+          { average: 5, count: 2, date: '2026-06-01' },
+          { average: 3, count: 1, date: '2026-06-02' }
+        ]
+      }
+    });
   });
 
   it('summarizes migraine and meditation metrics', () => {
