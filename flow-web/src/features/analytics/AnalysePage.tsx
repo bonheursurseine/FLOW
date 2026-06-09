@@ -104,6 +104,47 @@ export function AnalysePage() {
         )}
       </SectionCard>
 
+      <SectionCard eyebrow="Sommeil" title="Impact sur la journée suivante">
+        {analytics.sleep.nextDayStateByDuration.length === 0 ? (
+          <EmptyState
+            description="Ajoutez des nuits de sommeil puis au moins un check-in énergie ou une note de forme sur la journée qui suit."
+            title="Pas encore assez de données sommeil"
+          />
+        ) : (
+          <div className="chart-stack">
+            <ChartBlock
+              data={analytics.sleep.nextDayStateByDuration}
+              lineKeys={[
+                { key: 'averageEnergy', label: 'Énergie du lendemain', color: '#4f7a67' },
+                { key: 'averageForm', label: 'Forme du lendemain', color: '#d18b47' }
+              ]}
+              title="Durée de sommeil vs forme / énergie du lendemain"
+              xKey="label"
+            />
+            <div className="stat-grid">
+              <StatTile
+                label="Nuits étudiées"
+                value={String(
+                  analytics.sleep.nextDayStateByDuration.reduce((sum, point) => sum + point.countSleepDays, 0)
+                )}
+              />
+              <StatTile
+                label="Jours avec énergie"
+                value={String(
+                  analytics.sleep.nextDayStateByDuration.reduce((sum, point) => sum + point.countEnergyDays, 0)
+                )}
+              />
+              <StatTile
+                label="Jours avec forme"
+                value={String(
+                  analytics.sleep.nextDayStateByDuration.reduce((sum, point) => sum + point.countFormDays, 0)
+                )}
+              />
+            </div>
+          </div>
+        )}
+      </SectionCard>
+
       <SectionCard eyebrow="Migraine" title="Fréquence et intensité">
         {analytics.migraine.frequency.totalEpisodes === 0 ? (
           <EmptyState

@@ -9,6 +9,7 @@ import {
   averageStressByHour,
   compareFormWithMentalLoad,
   compareFormWithSleepDuration,
+  compareSleepDurationWithNextDayState,
   compareFormWithStress,
   dailyHydrationTotal,
   dailyFormAverage,
@@ -144,6 +145,120 @@ describe('analyticsService', () => {
     ]);
   });
 
+  it("relates sleep duration to the next day's form and energy", () => {
+    const entries = [
+      createEntry({
+        id: 'sleep-short-1',
+        entryType: 'sleep',
+        timestamp: '2026-06-01T07:00:00',
+        sleepDuration: 5
+      }),
+      createEntry({
+        id: 'form-short-1',
+        entryType: 'form',
+        timestamp: '2026-06-01T09:00:00',
+        energyScore: 4
+      }),
+      createEntry({
+        id: 'checkin-short-1',
+        entryType: 'checkIn',
+        sourceType: 'scheduledCheckIn',
+        timestamp: '2026-06-01T08:00:00',
+        energyScore: 5,
+        stressLevel: 3
+      }),
+      createEntry({
+        id: 'checkin-short-2',
+        entryType: 'checkIn',
+        sourceType: 'scheduledCheckIn',
+        timestamp: '2026-06-01T18:00:00',
+        energyScore: 7,
+        stressLevel: 4
+      }),
+      createEntry({
+        id: 'sleep-short-2',
+        entryType: 'sleep',
+        timestamp: '2026-06-02T07:00:00',
+        sleepDuration: 5.5
+      }),
+      createEntry({
+        id: 'form-short-2',
+        entryType: 'form',
+        timestamp: '2026-06-02T09:00:00',
+        energyScore: 5
+      }),
+      createEntry({
+        id: 'checkin-short-3',
+        entryType: 'checkIn',
+        sourceType: 'scheduledCheckIn',
+        timestamp: '2026-06-02T08:00:00',
+        energyScore: 6,
+        stressLevel: 4
+      }),
+      createEntry({
+        id: 'sleep-long-1',
+        entryType: 'sleep',
+        timestamp: '2026-06-03T07:00:00',
+        sleepDuration: 8
+      }),
+      createEntry({
+        id: 'form-long-1',
+        entryType: 'form',
+        timestamp: '2026-06-03T09:00:00',
+        energyScore: 8
+      }),
+      createEntry({
+        id: 'checkin-long-1',
+        entryType: 'checkIn',
+        sourceType: 'scheduledCheckIn',
+        timestamp: '2026-06-03T08:00:00',
+        energyScore: 8,
+        stressLevel: 3
+      }),
+      createEntry({
+        id: 'sleep-long-2',
+        entryType: 'sleep',
+        timestamp: '2026-06-04T07:00:00',
+        sleepDuration: 8.5
+      }),
+      createEntry({
+        id: 'form-long-2',
+        entryType: 'form',
+        timestamp: '2026-06-04T09:00:00',
+        energyScore: 9
+      }),
+      createEntry({
+        id: 'checkin-long-2',
+        entryType: 'checkIn',
+        sourceType: 'scheduledCheckIn',
+        timestamp: '2026-06-04T08:00:00',
+        energyScore: 9,
+        stressLevel: 2
+      })
+    ];
+
+    expect(compareSleepDurationWithNextDayState(entries)).toEqual([
+      {
+        averageEnergy: 6,
+        averageForm: 4.5,
+        countEnergyDays: 2,
+        countFormDays: 2,
+        countSleepDays: 2,
+        key: 'under-6',
+        label: 'Moins de 6h'
+      },
+      {
+        averageEnergy: 8.5,
+        averageForm: 8.5,
+        countEnergyDays: 2,
+        countFormDays: 2,
+        countSleepDays: 2,
+        key: '8-plus',
+        label: '8h ou plus'
+      }
+    ]);
+  });
+
   it('totals hydration by day and exposes daily analytics for the analyse page', () => {
     const entries = [
       createEntry({
@@ -212,6 +327,9 @@ describe('analyticsService', () => {
           { count: 2, date: '2026-06-01', total: 65 },
           { count: 1, date: '2026-06-02', total: 60 }
         ]
+      },
+      sleep: {
+        nextDayStateByDuration: []
       },
       scheduledCheckIns: {
         stressTrend: [

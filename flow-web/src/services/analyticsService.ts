@@ -22,6 +22,16 @@ export interface BucketComparisonPoint<TKey extends string = string> {
   label: string;
 }
 
+export interface SleepFollowUpPoint<TKey extends string = string> {
+  averageEnergy?: number;
+  averageForm?: number;
+  countEnergyDays: number;
+  countFormDays: number;
+  countSleepDays: number;
+  key: TKey;
+  label: string;
+}
+
 export interface MigraineFrequencyStats {
   averageEpisodesPerDay: number;
   averageEpisodesPerWeek: number;
@@ -77,6 +87,9 @@ export interface AnalyticsSnapshot {
     dailyAverage: DailyAveragePoint[];
     trend7d: DailyAveragePoint[];
     trend30d: DailyAveragePoint[];
+  };
+  sleep: {
+    nextDayStateByDuration: SleepFollowUpPoint<'under-6' | '6-to-8' | '8-plus'>[];
   };
   comparisons: {
     mentalLoad: BucketComparisonPoint<'low' | 'medium' | 'high'>[];
@@ -145,6 +158,9 @@ export function analyzeEntries(entries: TrackingEntry[]): AnalyticsSnapshot {
     },
     meditation: analyzeMeditation(entries),
     migraine: analyzeMigraine(entries),
+    sleep: {
+      nextDayStateByDuration: compareSleepDurationWithNextDayState(entries)
+    },
     scheduledCheckIns: {
       averageEnergyByHour: averageEnergyByHour(entries),
       averageStressByHour: averageStressByHour(entries),
@@ -256,6 +272,61 @@ export function compareFormWithStress(entries: TrackingEntry[]) {
     STRESS_BUCKETS,
     entries
   );
+}
+
+export function compareSleepDurationWithNextDayState(entries: TrackingEntry[]) {
+  const sleepDurationByDay = indexDailyValue(
+    entries.filter((entry) => entry.entryType === 'sleep'),
+    (entry) => entry.sleepDuration
+  );
+  const formAverageByDay = new Map(dailyFormAverage(entries).map((point) => [point.date, point.average]));
+  const energyAverageByDay = new Map(
+    scheduledCheckInEnergyTrend(entries).map((point) => [point.date, point.average])
+  );
+  const grouped = new Map<
+    (typeof SLEEP_DURATION_BUCKETS)[number]['key'],
+    { energy: number[]; form: number[]; sleepDays: number }
+  >();
+
+  for (const [date, sleepDuration] of sleepDurationByDay.entries()) {
+    const bucket = resolveBucket(sleepDuration, SLEEP_DURATION_BUCKETS);
+    if (!bucket) {
+      continue;
+    }
+
+    const existing = grouped.get(bucket.key) ?? { energy: [], form: [], sleepDays: 0 };
+    existing.sleepDays += 1;
+
+    const formAverage = formAverageByDay.get(date);
+    if (typeof formAverage === 'number' && Number.isNaN(formAverage) === false) {
+      existing.form.push(formAverage);
+    }
+
+    const energyAverage = energyAverageByDay.get(date);
+    if (typeof energyAverage === 'number' && Number.isNaN(energyAverage) === false) {
+      existing.energy.push(energyAverage);
+    }
+
+    grouped.set(bucket.key, existing);
+  }
+
+  return SLEEP_DURATION_BUCKETS
+    .filter((bucket) => {
+      const values = grouped.get(bucket.key);
+      return values ? values.energy.length > 0 || values.form.length > 0 : false;
+    })
+    .map((bucket) => {
+      const values = grouped.get(bucket.key) ?? { energy: [], form: [], sleepDays: 0 };
+      return {
+        averageEnergy: values.energy.length > 0 ? average(values.energy) : undefined,
+        averageForm: values.form.length > 0 ? average(values.form) : undefined,
+        countEnergyDays: values.energy.length,
+        countFormDays: values.form.length,
+        countSleepDays: values.sleepDays,
+        key: bucket.key,
+        label: bucket.label
+      };
+    });
 }
 
 export function dailyFormAverage(entries: TrackingEntry[]): DailyAveragePoint[] {
