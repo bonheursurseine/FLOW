@@ -214,6 +214,22 @@ textarea {
   font-weight: 600;
 }
 
+.inspirational-quote__text {
+  margin: 0;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--flow-text);
+}
+
+.inspirational-quote__hint {
+  margin-top: 0;
+}
+
+.inspirational-quote__action {
+  padding: 0.7rem 0.95rem;
+  font-weight: 600;
+}
+
 .entry-card-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

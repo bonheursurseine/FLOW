@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 
+import { InspirationalQuoteCard } from '../../components/InspirationalQuoteCard';
 import { settingsRepository } from '../../storage/settingsRepository';
 import type { LocalSettings } from '../../types/settings';
 import type { EntryType } from '../../types/tracking';
@@ -27,12 +28,13 @@ export function NoterPage() {
   }
 
   function handleSaved() {
-    setFeedback('Entrée enregistrée localement.');
+    setFeedback('Entree enregistree localement.');
   }
 
   return (
     <main className="app-shell__surface">
-      <QuickCheckInCard onSaved={() => setFeedback('Check-in rapide enregistré.')} />
+      <QuickCheckInCard onSaved={() => setFeedback('Check-in rapide enregistre.')} />
+      <InspirationalQuoteCard />
       <EntryCardGrid
         onSelect={handleOpen}
         visibleEntryTypes={settings?.visibleHomeEntryTypes.filter((entryType) => entryType !== 'checkIn')}
