@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { resetFlowStorageForTests } from '../storage/db';
 import { settingsRepository } from '../storage/settingsRepository';
 import { trackingRepository } from '../storage/trackingRepository';
+import type { CheckInScheduleDraft, TrackingEntryDraft } from '../types/tracking';
 
 describe('trackingRepository', () => {
   beforeEach(async () => {
@@ -25,6 +26,29 @@ describe('trackingRepository', () => {
     expect(entries[0].stressLevel).toBe(4);
   });
 
+  it('fills default entry fields and sorts entries by newest timestamp first', async () => {
+    const latest = await trackingRepository.saveEntry({
+      freeNote: 'Latest entry'
+    } as TrackingEntryDraft);
+
+    await trackingRepository.saveEntry({
+      id: 'older-entry',
+      timestamp: '2026-06-01T09:00:00.000Z',
+      entryType: 'freeNote',
+      sourceType: 'spontaneous',
+      freeNote: 'Older entry'
+    });
+
+    const entries = await trackingRepository.listEntries();
+
+    expect(latest.id).toBeTruthy();
+    expect(Number.isNaN(Date.parse(latest.timestamp ?? ''))).toBe(false);
+    expect(latest.entryType).toBe('freeNote');
+    expect(latest.sourceType).toBe('spontaneous');
+    expect(latest.completedFromNotification).toBe(false);
+    expect(entries.map((entry) => entry.id)).toEqual([latest.id, 'older-entry']);
+  });
+
   it('returns cloned entry data instead of live stored references', async () => {
     const saved = await trackingRepository.saveEntry({
       entryType: 'freeNote',
@@ -43,6 +67,42 @@ describe('trackingRepository', () => {
 
     const [reloadedEntry] = await trackingRepository.listEntries();
     expect(reloadedEntry.freeNote).toBe('Initial note');
+  });
+
+  it('keeps legacy entries compatible alongside daily goal entries', async () => {
+    await trackingRepository.saveEntry({
+      id: 'legacy-note',
+      timestamp: '2026-06-11T09:00:00.000Z',
+      entryType: 'freeNote',
+      sourceType: 'spontaneous',
+      freeNote: 'Ancienne note'
+    });
+
+    await trackingRepository.saveEntry({
+      id: 'daily-goal-1',
+      timestamp: '2026-06-12T09:00:00.000Z',
+      entryType: 'dailyGoal',
+      sourceType: 'spontaneous',
+      goalText: 'Faire une pause dehors',
+      goalAchieved: false
+    });
+
+    const entries = await trackingRepository.listEntries();
+
+    expect(entries).toHaveLength(2);
+    expect(entries[0]).toMatchObject({
+      id: 'daily-goal-1',
+      entryType: 'dailyGoal',
+      goalText: 'Faire une pause dehors',
+      goalAchieved: false
+    });
+    expect(entries[1]).toMatchObject({
+      id: 'legacy-note',
+      entryType: 'freeNote',
+      freeNote: 'Ancienne note'
+    });
+    expect(entries[1].goalText).toBeUndefined();
+    expect(entries[1].goalAchieved).toBeUndefined();
   });
 
   it('normalizes schedule times before sorting them', async () => {
@@ -65,6 +125,61 @@ describe('trackingRepository', () => {
     const schedules = await trackingRepository.listSchedules();
 
     expect(schedules.map((schedule) => schedule.time)).toEqual(['08:30', '09:00', '12:00']);
+  });
+
+  it('defaults schedules to enabled and trims optional labels', async () => {
+    const schedule = await trackingRepository.saveSchedule({
+      time: ' 7:5 ',
+      label: '   '
+    } as CheckInScheduleDraft);
+
+    expect(schedule.time).toBe('07:05');
+    expect(schedule.isEnabled).toBe(true);
+    expect(schedule.label).toBeUndefined();
+  });
+
+  it('keeps invalid schedule times trimmed instead of coercing them', async () => {
+    const schedule = await trackingRepository.saveSchedule({
+      time: ' 24:00 ',
+      label: 'Night'
+    } as CheckInScheduleDraft);
+
+    expect(schedule.time).toBe('24:00');
+  });
+
+  it('deletes entries and schedules and can clear all persisted tracking data', async () => {
+    const entry = await trackingRepository.saveEntry({
+      entryType: 'freeNote',
+      sourceType: 'spontaneous',
+      freeNote: 'To remove'
+    });
+    const schedule = await trackingRepository.saveSchedule({
+      time: '08:00',
+      isEnabled: true,
+      label: 'Morning'
+    });
+
+    await trackingRepository.deleteEntry(entry.id);
+    await trackingRepository.deleteSchedule(schedule.id);
+
+    expect(await trackingRepository.listEntries()).toEqual([]);
+    expect(await trackingRepository.listSchedules()).toEqual([]);
+
+    await trackingRepository.saveEntry({
+      entryType: 'freeNote',
+      sourceType: 'spontaneous',
+      freeNote: 'Will be cleared'
+    });
+    await trackingRepository.saveSchedule({
+      time: '12:00',
+      isEnabled: true,
+      label: 'Noon'
+    });
+
+    await trackingRepository.clearAll();
+
+    expect(await trackingRepository.listEntries()).toEqual([]);
+    expect(await trackingRepository.listSchedules()).toEqual([]);
   });
 });
 

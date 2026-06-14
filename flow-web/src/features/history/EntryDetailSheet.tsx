@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { BottomSheet } from '../../components/BottomSheet';
 import type { TrackingEntry } from '../../types/tracking';
+import { getDailyGoalStatusLabel } from '../../utils/dailyGoals';
 import { formatShortDateTime, getEntryTypeLabel, getSourceTypeLabel } from '../../utils/entryDisplay';
 import { summarizeEntry } from '../../utils/entrySummary';
 import { EntrySheet } from '../tracking/EntrySheet';
@@ -63,6 +64,18 @@ export function EntryDetailSheet({ entry, onClose, onDelete, onSaved, open }: En
             <dt>Source</dt>
             <dd>{getSourceTypeLabel(entry.sourceType)}</dd>
           </div>
+          {entry.entryType === 'dailyGoal' && entry.goalText ? (
+            <div>
+              <dt>Objectif</dt>
+              <dd>{entry.goalText}</dd>
+            </div>
+          ) : null}
+          {entry.entryType === 'dailyGoal' ? (
+            <div>
+              <dt>Statut</dt>
+              <dd>{getDailyGoalStatusLabel(entry.goalAchieved)}</dd>
+            </div>
+          ) : null}
           {entry.comment ? (
             <div>
               <dt>Commentaire</dt>

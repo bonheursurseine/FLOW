@@ -1,7 +1,8 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import * as analyticsService from '../services/analyticsService';
 import {
+  analyzeDailyGoals,
   analyzeEntries,
   analyzeMeditation,
   analyzeMigraine,
@@ -9,6 +10,7 @@ import {
   averageStressByHour,
   compareFormWithMentalLoad,
   compareFormWithSleepDuration,
+  compareFormWithSleepQuality,
   compareSleepDurationWithNextDayState,
   compareFormWithStress,
   dailyHydrationTotal,
@@ -132,6 +134,10 @@ describe('analyticsService', () => {
     expect(compareFormWithSleepDuration(entries)).toEqual([
       { average: 4, count: 1, key: 'under-6', label: 'Moins de 6h' },
       { average: 8, count: 1, key: '8-plus', label: '8h ou plus' }
+    ]);
+    expect(compareFormWithSleepQuality(entries)).toMatchObject([
+      { average: 4, count: 1, key: 'medium' },
+      { average: 8, count: 1, key: 'high' }
     ]);
 
     expect(compareFormWithStress(entries)).toEqual([
@@ -259,6 +265,58 @@ describe('analyticsService', () => {
     ]);
   });
 
+  it('keeps sleep follow-up buckets when only part of the same-day data exists', () => {
+    const entries = [
+      createEntry({
+        id: 'sleep-short',
+        entryType: 'sleep',
+        timestamp: '2026-06-01T07:00:00',
+        sleepDuration: 5
+      }),
+      createEntry({
+        id: 'form-short',
+        entryType: 'form',
+        timestamp: '2026-06-01T09:00:00',
+        energyScore: 4
+      }),
+      createEntry({
+        id: 'sleep-long',
+        entryType: 'sleep',
+        timestamp: '2026-06-02T07:00:00',
+        sleepDuration: 8
+      }),
+      createEntry({
+        id: 'checkin-long',
+        entryType: 'checkIn',
+        sourceType: 'scheduledCheckIn',
+        timestamp: '2026-06-02T08:00:00',
+        energyScore: 9,
+        stressLevel: 2
+      })
+    ];
+
+    expect(compareSleepDurationWithNextDayState(entries)).toEqual([
+      {
+        averageEnergy: undefined,
+        averageForm: 4,
+        countEnergyDays: 0,
+        countFormDays: 1,
+        countSleepDays: 1,
+        key: 'under-6',
+        label: 'Moins de 6h'
+      },
+      {
+        averageEnergy: 9,
+        averageForm: undefined,
+        countEnergyDays: 1,
+        countFormDays: 0,
+        countSleepDays: 1,
+        key: '8-plus',
+        label: '8h ou plus'
+      }
+    ]);
+  });
+
   it('totals hydration by day and exposes daily analytics for the analyse page', () => {
     const entries = [
       createEntry({
@@ -322,6 +380,15 @@ describe('analyticsService', () => {
     ]);
 
     expect(analyzeEntries(entries)).toMatchObject({
+      dailyGoals: {
+        last7Days: {
+          achievedCount: 0,
+          decidedCount: 0,
+          pendingCount: 0,
+          totalGoals: 0,
+          windowDays: 7
+        }
+      },
       hydration: {
         dailyTotal: [
           { count: 2, date: '2026-06-01', total: 65 },
@@ -338,6 +405,62 @@ describe('analyticsService', () => {
         ]
       }
     });
+  });
+
+  it('summarizes daily goal completion over recent windows', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-06-12T12:00:00.000Z'));
+
+    try {
+      const entries = [
+        createEntry({
+          id: 'goal-1',
+          entryType: 'dailyGoal',
+          timestamp: '2026-06-10T08:00:00',
+          goalText: 'Marcher',
+          goalAchieved: true
+        }),
+        createEntry({
+          id: 'goal-2',
+          entryType: 'dailyGoal',
+          timestamp: '2026-06-08T08:00:00',
+          goalText: 'Respirer',
+          goalAchieved: false
+        }),
+        createEntry({
+          id: 'goal-3',
+          entryType: 'dailyGoal',
+          timestamp: '2026-05-20T08:00:00',
+          goalText: 'Lire',
+          goalAchieved: true
+        }),
+        createEntry({
+          id: 'goal-4',
+          entryType: 'dailyGoal',
+          timestamp: '2026-06-12T08:00:00',
+          goalText: 'Faire une pause'
+        })
+      ];
+
+      expect(analyzeDailyGoals(entries)).toEqual({
+        last7Days: {
+          achievedCount: 1,
+          decidedCount: 2,
+          pendingCount: 1,
+          totalGoals: 3,
+          windowDays: 7
+        },
+        last30Days: {
+          achievedCount: 2,
+          decidedCount: 3,
+          pendingCount: 1,
+          totalGoals: 4,
+          windowDays: 30
+        }
+      });
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it('summarizes migraine and meditation metrics', () => {
@@ -462,6 +585,65 @@ describe('analyticsService', () => {
           weekStart: '2026-06-08'
         }
       ]
+    });
+  });
+
+  it('ignores invalid meditation durations and missing migraine pain scores', () => {
+    const entries = [
+      createEntry({
+        id: 'meditation-valid',
+        entryType: 'meditation',
+        timestamp: '2026-06-01T19:00:00',
+        meditationDuration: 15
+      }),
+      createEntry({
+        id: 'meditation-nan',
+        entryType: 'meditation',
+        timestamp: '2026-06-02T19:00:00',
+        meditationDuration: Number.NaN
+      }),
+      createEntry({
+        id: 'migraine-1',
+        entryType: 'migraine',
+        timestamp: '2026-06-01T09:00:00',
+        migraineLevel: 'moderate'
+      }),
+      createEntry({
+        id: 'migraine-2',
+        entryType: 'migraine',
+        timestamp: '2026-06-02T14:00:00',
+        migraineLevel: 'severe'
+      })
+    ];
+
+    expect(analyzeMeditation(entries)).toEqual({
+      averageMinutes: 15,
+      totalMinutes: 15,
+      totalSessions: 1,
+      weekly: [
+        {
+          averageMinutes: 15,
+          sessionCount: 1,
+          totalMinutes: 15,
+          weekStart: '2026-06-01'
+        }
+      ]
+    });
+
+    expect(analyzeMigraine(entries)).toEqual({
+      byHour: [],
+      frequency: {
+        averageEpisodesPerDay: 1,
+        averageEpisodesPerWeek: 7,
+        daysWithEpisodes: 2,
+        totalEpisodes: 2
+      },
+      intensity: {
+        averagePain: null,
+        entriesWithPainScore: 0
+      },
+      vsCaffeine: [],
+      vsStress: []
     });
   });
 });

@@ -11,6 +11,7 @@ import type {
 const ENTRY_TYPE_LABELS: Record<EntryType, string> = {
   caffeine: 'Caféine',
   checkIn: 'Check-in',
+  dailyGoal: 'Objectif du jour',
   form: 'Forme',
   freeNote: 'Note libre',
   hydration: 'Hydratation',

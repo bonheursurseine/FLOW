@@ -4,6 +4,7 @@ import { EmptyState } from '../../components/EmptyState';
 import { SectionCard } from '../../components/SectionCard';
 import { trackingRepository } from '../../storage/trackingRepository';
 import type { EntryType, SourceType, TrackingEntry } from '../../types/tracking';
+import { getDailyGoalStatusLabel } from '../../utils/dailyGoals';
 import { formatShortDateTime, getEntryTypeLabel, getSourceTypeLabel } from '../../utils/entryDisplay';
 import { summarizeEntry } from '../../utils/entrySummary';
 
@@ -78,6 +79,9 @@ export function HistoriquePage() {
                   <span className="history-card__badge">{getSourceTypeLabel(entry.sourceType)}</span>
                 </div>
                 <strong>{getEntryTypeLabel(entry.entryType)}</strong>
+                {entry.entryType === 'dailyGoal' ? (
+                  <span className="history-card__badge">{getDailyGoalStatusLabel(entry.goalAchieved)}</span>
+                ) : null}
                 <p>{summarizeEntry(entry) || 'Entrée sans résumé.'}</p>
               </button>
             ))}

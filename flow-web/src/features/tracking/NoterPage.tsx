@@ -5,6 +5,7 @@ import { settingsRepository } from '../../storage/settingsRepository';
 import type { LocalSettings } from '../../types/settings';
 import type { EntryType } from '../../types/tracking';
 
+import { DailyGoalCard } from './DailyGoalCard';
 import { EntryCardGrid } from './EntryCardGrid';
 import { EntrySheet } from './EntrySheet';
 import { QuickCheckInCard } from './QuickCheckInCard';
@@ -35,6 +36,7 @@ export function NoterPage() {
     <main className="app-shell__surface">
       <QuickCheckInCard onSaved={() => setFeedback('Check-in rapide enregistre.')} />
       <InspirationalQuoteCard />
+      <DailyGoalCard onSaved={() => setFeedback('Objectif du jour enregistre localement.')} />
       <EntryCardGrid
         onSelect={handleOpen}
         visibleEntryTypes={settings?.visibleHomeEntryTypes.filter((entryType) => entryType !== 'checkIn')}

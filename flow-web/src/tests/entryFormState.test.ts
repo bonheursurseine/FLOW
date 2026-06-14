@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 
 import {
   ENTRY_CARD_DEFINITIONS,
+  calculateSleepDurationFromTimes,
+  createEntryDraft,
   createDraftFromEntry,
   createQuickCheckInDraft,
   normalizeEntryDraft,
@@ -33,6 +35,14 @@ describe('entryFormState', () => {
     expect(draft.sourceType).toBe('spontaneous');
     expect(draft.energyScore).toBe(7);
     expect(draft.stressLevel).toBe(3);
+  });
+
+  it('creates scheduled check-in drafts with notification completion enabled', () => {
+    const draft = createEntryDraft('checkIn', 'scheduledCheckIn');
+
+    expect(draft.entryType).toBe('checkIn');
+    expect(draft.sourceType).toBe('scheduledCheckIn');
+    expect(draft.completedFromNotification).toBe(true);
   });
 
   it('rejects an empty free-note payload', () => {
@@ -90,6 +100,52 @@ describe('entryFormState', () => {
     expect(normalized.sleepDuration).toBe(7.5);
   });
 
+  it('preserves manual sleep duration when both time fields are invalid', () => {
+    const normalized = normalizeEntryDraft({
+      entryType: 'sleep',
+      sourceType: 'spontaneous',
+      bedTime: '25:00',
+      wakeTime: '9:0',
+      sleepDuration: 7
+    });
+
+    expect(normalized.bedTime).toBeUndefined();
+    expect(normalized.wakeTime).toBeUndefined();
+    expect(normalized.sleepDuration).toBe(7);
+  });
+
+  it('normalizes scheduled metadata, trims text, and clamps scores', () => {
+    const normalized = normalizeEntryDraft({
+      entryType: 'checkIn',
+      sourceType: 'scheduledCheckIn',
+      completedFromNotification: true,
+      notificationId: ' notif-1 ',
+      scheduledTime: ' 9:05 ',
+      energyScore: 15,
+      stressLevel: 0,
+      comment: '  note rapide  '
+    });
+
+    expect(normalized.completedFromNotification).toBe(true);
+    expect(normalized.notificationId).toBe('notif-1');
+    expect(normalized.scheduledTime).toBe('9:05');
+    expect(normalized.energyScore).toBe(10);
+    expect(normalized.stressLevel).toBe(1);
+    expect(normalized.comment).toBe('note rapide');
+  });
+
+  it('clears notification completion for spontaneous drafts', () => {
+    const normalized = normalizeEntryDraft({
+      entryType: 'checkIn',
+      sourceType: 'spontaneous',
+      completedFromNotification: true,
+      energyScore: 5,
+      stressLevel: 4
+    });
+
+    expect(normalized.completedFromNotification).toBe(false);
+  });
+
   it('requires at least one sleep field after duration is auto-calculated', () => {
     const errors = validateEntryDraft({
       entryType: 'sleep',
@@ -129,6 +185,35 @@ describe('entryFormState', () => {
 
     expect(normalized.caffeineCups).toBe(0);
     expect(validateEntryDraft(normalized)).toEqual([]);
+  });
+
+  it('normalizes and validates daily goals with an optional achieved status', () => {
+    const normalized = normalizeEntryDraft({
+      entryType: 'dailyGoal',
+      sourceType: 'spontaneous',
+      goalText: '  Marcher 20 minutes  ',
+      goalAchieved: false,
+      comment: '  En fin de journee  '
+    });
+
+    expect(normalized.goalText).toBe('Marcher 20 minutes');
+    expect(normalized.goalAchieved).toBe(false);
+    expect(normalized.comment).toBe('En fin de journee');
+    expect(validateEntryDraft(normalized)).toEqual([]);
+  });
+
+  it('requires a goal text for daily goals', () => {
+    const errors = validateEntryDraft({
+      entryType: 'dailyGoal',
+      sourceType: 'spontaneous',
+      goalText: '   '
+    });
+
+    expect(errors).toEqual(["Ajoutez l'objectif principal de la journee avant d'enregistrer."]);
+  });
+
+  it('returns no duration when sleep start and end are identical', () => {
+    expect(calculateSleepDurationFromTimes('07:30', '07:30')).toBeUndefined();
   });
 
   it('defines card titles and descriptions with emojis and French punctuation', () => {

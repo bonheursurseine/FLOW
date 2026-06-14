@@ -11,6 +11,7 @@ import {
 describe('entryDisplay', () => {
   it('returns accented labels for entry types and source types', () => {
     expect(getEntryTypeLabel('caffeine')).toBe('Caféine');
+    expect(getEntryTypeLabel('dailyGoal')).toBe('Objectif du jour');
     expect(getEntryTypeLabel('screenTime')).toBe("Temps d'écran");
     expect(getEntryTypeLabel('meditation')).toBe('Méditation');
     expect(getSourceTypeLabel('spontaneous')).toBe('Spontané');

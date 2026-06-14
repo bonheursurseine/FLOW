@@ -24,7 +24,8 @@ const ENTRY_TYPE_OPTIONS: Array<{ label: string; value: EntryType | 'all' }> = [
   { value: 'medication', label: 'Médicament' },
   { value: 'meditation', label: 'Méditation' },
   { value: 'notableEvent', label: 'Événement' },
-  { value: 'freeNote', label: 'Note libre' }
+  { value: 'freeNote', label: 'Note libre' },
+  { value: 'dailyGoal', label: 'Objectif du jour' }
 ];
 
 export function HistoryFilters({

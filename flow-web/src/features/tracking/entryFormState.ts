@@ -180,6 +180,13 @@ export function normalizeEntryDraft(draft: TrackingEntryDraft): TrackingEntryDra
         eventNote: normalizeText(draft.eventNote),
         comment: normalizeText(draft.comment)
       };
+    case 'dailyGoal':
+      return {
+        ...base,
+        goalText: normalizeText(draft.goalText),
+        goalAchieved: typeof draft.goalAchieved === 'boolean' ? draft.goalAchieved : undefined,
+        comment: normalizeText(draft.comment)
+      };
     case 'freeNote':
     default:
       return {
@@ -236,6 +243,8 @@ export function validateEntryDraft(draft: TrackingEntryDraft): string[] {
       );
     case 'notableEvent':
       return requireOne(normalized, ['eventNote', 'comment'], 'Ajoutez un evenement ou un commentaire.');
+    case 'dailyGoal':
+      return requireFields(normalized, ['goalText'], "Ajoutez l'objectif principal de la journee avant d'enregistrer.");
     case 'freeNote':
     default:
       return requireOne(normalized, ['freeNote', 'comment'], "Ajoutez une note avant d'enregistrer.");

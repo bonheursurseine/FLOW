@@ -14,6 +14,7 @@ export type EntryType =
   | 'meditation'
   | 'notableEvent'
   | 'freeNote'
+  | 'dailyGoal'
   | 'checkIn';
 
 export type SourceType = 'spontaneous' | 'scheduledCheckIn';
@@ -54,6 +55,8 @@ export interface TrackingEntry {
   meditationDuration?: number;
   eventNote?: string;
   freeNote?: string;
+  goalText?: string;
+  goalAchieved?: boolean;
   comment?: string;
 }
 

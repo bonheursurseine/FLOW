@@ -12,6 +12,7 @@ import {
   getPhysicalActivityLevelLabel,
   getScreenTimeLevelLabel
 } from './entryDisplay';
+import { getDailyGoalStatusLabel } from './dailyGoals';
 
 export function summarizeEntry(entry: TrackingEntry): string {
   switch (entry.entryType) {
@@ -72,6 +73,8 @@ export function summarizeEntry(entry: TrackingEntry): string {
       return summarizeParts([entry.eventNote, entry.comment]);
     case 'freeNote':
       return summarizeParts([entry.freeNote, entry.comment]);
+    case 'dailyGoal':
+      return summarizeParts([entry.goalText, getDailyGoalStatusLabel(entry.goalAchieved), entry.comment]);
     default:
       return summarizeParts([entry.comment]) || getEntryTypeLabel(entry.entryType);
   }

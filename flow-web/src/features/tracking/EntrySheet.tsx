@@ -313,6 +313,23 @@ function renderFields(
           <TextAreaField label="Commentaire" onChange={(value) => update('comment', value)} value={draft.comment} />
         </>
       );
+    case 'dailyGoal':
+      return (
+        <>
+          <TextAreaField
+            label="Quel est ton objectif principal aujourd hui ?"
+            onChange={(value) => update('goalText', value)}
+            value={draft.goalText}
+          />
+          <ToggleField
+            checked={Boolean(draft.goalAchieved)}
+            label="Objectif atteint ?"
+            onChange={(checked) => update('goalAchieved', checked)}
+          />
+          <HelperText text="Meme partiellement, c est deja une information utile." />
+          <TextAreaField label="Commentaire" onChange={(value) => update('comment', value)} value={draft.comment} />
+        </>
+      );
     case 'checkIn':
     default:
       return (
@@ -418,6 +435,10 @@ function ToggleField({ checked, label, onChange }: ToggleFieldProps) {
       <span>{label}</span>
     </label>
   );
+}
+
+function HelperText({ text }: { text: string }) {
+  return <p className="status-copy">{text}</p>;
 }
 
 interface ReadOnlyFieldProps {

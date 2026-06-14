@@ -1,4 +1,5 @@
 import type { TrackingEntry } from '../types/tracking';
+import { analyzeDailyGoalWindow, type DailyGoalWindowStats } from '../utils/dailyGoals';
 import {
   average,
   type DailyAveragePoint,
@@ -72,7 +73,13 @@ export interface MeditationAnalytics {
   weekly: WeeklyAggregatePoint[];
 }
 
+export interface DailyGoalAnalytics {
+  last7Days: DailyGoalWindowStats;
+  last30Days: DailyGoalWindowStats;
+}
+
 export interface AnalyticsSnapshot {
+  dailyGoals: DailyGoalAnalytics;
   hydration: {
     dailyLiters: ReturnType<typeof dailyHydrationLiters>;
     dailyTotal: ReturnType<typeof dailyHydrationTotal>;
@@ -141,6 +148,7 @@ export function analyzeEntries(entries: TrackingEntry[]): AnalyticsSnapshot {
   const formDailyAverage = dailyFormAverage(entries);
 
   return {
+    dailyGoals: analyzeDailyGoals(entries),
     comparisons: {
       mentalLoad: compareFormWithMentalLoad(entries),
       sleepDuration: compareFormWithSleepDuration(entries),
@@ -170,14 +178,22 @@ export function analyzeEntries(entries: TrackingEntry[]): AnalyticsSnapshot {
   };
 }
 
+export function analyzeDailyGoals(entries: TrackingEntry[]): DailyGoalAnalytics {
+  return {
+    last7Days: analyzeDailyGoalWindow(entries, 7),
+    last30Days: analyzeDailyGoalWindow(entries, 30)
+  };
+}
+
 export function analyzeMeditation(entries: TrackingEntry[]): MeditationAnalytics {
   const meditationEntries = entries.filter(
-    (entry) => entry.entryType === 'meditation' && typeof entry.meditationDuration === 'number'
+    (entry): entry is TrackingEntry & { meditationDuration: number } =>
+      entry.entryType === 'meditation' &&
+      typeof entry.meditationDuration === 'number' &&
+      Number.isNaN(entry.meditationDuration) === false
   );
 
-  const durations = meditationEntries
-    .map((entry) => entry.meditationDuration)
-    .filter((duration): duration is number => typeof duration === 'number' && !Number.isNaN(duration));
+  const durations = meditationEntries.map((entry) => entry.meditationDuration);
 
   return {
     averageMinutes: durations.length > 0 ? average(durations) : 0,

@@ -83,6 +83,43 @@ export function AnalysePage() {
         )}
       </SectionCard>
 
+      <SectionCard eyebrow="Objectif du jour" title="Suivi recent">
+        {analytics.dailyGoals.last30Days.totalGoals === 0 ? (
+          <EmptyState
+            description="Ajoutez un objectif du jour pour commencer à voir un suivi simple et bienveillant."
+            title="Pas encore d'objectif du jour"
+          />
+        ) : (
+          <div className="chart-stack">
+            <div className="stat-grid">
+              <StatTile
+                label="Atteints sur 7 jours"
+                value={formatGoalCompletionRate(
+                  analytics.dailyGoals.last7Days.achievedCount,
+                  analytics.dailyGoals.last7Days.decidedCount
+                )}
+              />
+              <StatTile
+                label="Sans statut sur 7 jours"
+                value={String(analytics.dailyGoals.last7Days.pendingCount)}
+              />
+              <StatTile
+                label="Atteints sur 30 jours"
+                value={formatGoalCompletionRate(
+                  analytics.dailyGoals.last30Days.achievedCount,
+                  analytics.dailyGoals.last30Days.decidedCount
+                )}
+              />
+              <StatTile
+                label="Sans statut sur 30 jours"
+                value={String(analytics.dailyGoals.last30Days.pendingCount)}
+              />
+            </div>
+            <p className="status-copy">Même partiellement, chaque retour aide à relire la période avec plus de douceur.</p>
+          </div>
+        )}
+      </SectionCard>
+
       <SectionCard eyebrow="Forme" title="Tendances et comparaisons">
         {analytics.form.dailyAverage.length === 0 ? (
           <EmptyState
@@ -281,4 +318,12 @@ function pickPrimaryMetric<TData extends object>(data: TData[]): string {
   return (
     Object.entries(firstRow).find(([, value]) => typeof value === 'number')?.[0] ?? 'average'
   );
+}
+
+function formatGoalCompletionRate(achievedCount: number, decidedCount: number): string {
+  if (decidedCount === 0) {
+    return 'Aucun statut';
+  }
+
+  return `${Math.round((achievedCount / decidedCount) * 100)}%`;
 }

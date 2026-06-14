@@ -48,4 +48,11 @@ describe('EntrySheet', () => {
     expect(screen.getByRole('option', { name: 'Élevé' })).not.toBeNull();
     expect(screen.getByRole('option', { name: 'Très élevé' })).not.toBeNull();
   });
+  it('shows goal text and achieved status controls for daily goals', () => {
+    render(<EntrySheet entryType="dailyGoal" onClose={() => undefined} open={true} />);
+
+    expect(screen.getByLabelText('Quel est ton objectif principal aujourd hui ?')).not.toBeNull();
+    expect(screen.getByLabelText('Objectif atteint ?').getAttribute('type')).toBe('checkbox');
+    expect(screen.getByText('Meme partiellement, c est deja une information utile.')).not.toBeNull();
+  });
 });
