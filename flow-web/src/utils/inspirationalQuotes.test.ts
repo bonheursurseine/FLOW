@@ -5,6 +5,8 @@ describe('inspirationalQuotes', () => {
     const quote = getInspirationalQuoteForDate(new Date(2026, 5, 12, 8, 0, 0));
 
     expect(inspirationalQuotes).toContain(quote);
+    expect(quote.author.length).toBeGreaterThan(0);
+    expect(quote.text.length).toBeGreaterThan(0);
   });
 
   it('returns the same quote for the same calendar day', () => {

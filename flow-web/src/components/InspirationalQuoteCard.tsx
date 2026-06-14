@@ -24,15 +24,17 @@ export function InspirationalQuoteCard({ date, showRefreshButton = true }: Inspi
             onClick={() => setRotationOffset((currentOffset) => (currentOffset + 1) % inspirationalQuotes.length)}
             type="button"
           >
-            Changer
+            Autre citation
           </button>
         ) : undefined
       }
       eyebrow="Citation inspirante"
       title="Pour aujourd'hui"
     >
-      <p className="inspirational-quote__text">"{quote}"</p>
-      <p className="status-copy inspirational-quote__hint">Une phrase douce pour commencer ou terminer la journee.</p>
+      <p className="inspirational-quote__text">"{quote.text}"</p>
+      <p className="inspirational-quote__author">{quote.author}</p>
+      <p className="inspirational-quote__role">{quote.role}</p>
+      <p className="status-copy inspirational-quote__hint">Des mots venus de personnes qui ont cherche, construit, explore ou transforme.</p>
     </SectionCard>
   );
 }

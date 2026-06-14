@@ -1,14 +1,50 @@
-export const inspirationalQuotes = [
-  'Un petit pas compte aussi.',
-  "Aujourd'hui, je fais avec l'energie que j'ai.",
-  "Avancer doucement, c'est avancer quand meme.",
-  'Ce qui est fait avec douceur dure plus longtemps.',
-  "Observer sans juger, c'est deja prendre soin.",
-  'Faire simple peut etre une vraie force.',
-  'Une pause peut aussi faire partie du progres.',
-  'Je peux reprendre mon rythme la ou je suis.',
-  "Le calme aussi est une facon d'avancer.",
-  'Chaque effort discret a sa valeur.'
+export interface InspirationalQuote {
+  author: string;
+  role: string;
+  text: string;
+}
+
+export const inspirationalQuotes: readonly InspirationalQuote[] = [
+  {
+    text: "Dans la vie, rien n'est a craindre, tout est a comprendre.",
+    author: 'Marie Curie',
+    role: 'physicienne et chimiste'
+  },
+  {
+    text: "Le hasard ne favorise que les esprits prepares.",
+    author: 'Louis Pasteur',
+    role: 'chimiste et microbiologiste'
+  },
+  {
+    text: "La vraie generosite envers l'avenir consiste a tout donner au present.",
+    author: 'Albert Camus',
+    role: 'ecrivain et philosophe'
+  },
+  {
+    text: "Changer la vie aujourd'hui meme. Ne pas miser sur l'avenir, agir sans attendre.",
+    author: 'Simone de Beauvoir',
+    role: 'philosophe et ecrivaine'
+  },
+  {
+    text: "Douter de tout ou tout croire nous dispensent de reflechir.",
+    author: 'Henri Poincare',
+    role: 'mathematicien et physicien'
+  },
+  {
+    text: "Fais de ta vie un reve, et d'un reve, une realite.",
+    author: 'Antoine de Saint-Exupery',
+    role: 'ecrivain et aviateur'
+  },
+  {
+    text: 'Faites ce que vous pouvez, avec ce que vous avez, la ou vous etes.',
+    author: 'Theodore Roosevelt',
+    role: "homme d'Etat et explorateur"
+  },
+  {
+    text: "La vie, c'est comme une bicyclette, il faut avancer pour ne pas perdre l'equilibre.",
+    author: 'Albert Einstein',
+    role: 'physicien'
+  }
 ] as const;
 
 export function getQuoteIndexForDate(date: Date, quoteCount: number = inspirationalQuotes.length) {
@@ -23,7 +59,7 @@ export function getQuoteIndexForDate(date: Date, quoteCount: number = inspiratio
 export function getInspirationalQuoteForDate(
   date: Date,
   rotationOffset: number = 0,
-  quotes: readonly string[] = inspirationalQuotes
+  quotes: readonly InspirationalQuote[] = inspirationalQuotes
 ) {
   if (quotes.length === 0) {
     throw new Error('At least one inspirational quote is required.');

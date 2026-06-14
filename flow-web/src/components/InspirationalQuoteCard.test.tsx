@@ -20,10 +20,11 @@ describe('InspirationalQuoteCard', () => {
 
     render(<InspirationalQuoteCard date={date} />);
 
-    expect(screen.getByText(`"${expectedQuote}"`)).toBeTruthy();
+    expect(screen.getByText(`"${expectedQuote.text}"`)).toBeTruthy();
+    expect(screen.getByText(expectedQuote.author)).toBeTruthy();
     expect(globalThis.fetch).not.toHaveBeenCalled();
 
-    fireEvent.click(screen.getByRole('button', { name: 'Changer' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Autre citation' }));
 
     expect(globalThis.fetch).not.toHaveBeenCalled();
   });
@@ -33,8 +34,9 @@ describe('InspirationalQuoteCard', () => {
     const nextQuote = getInspirationalQuoteForDate(date, 1);
 
     render(<InspirationalQuoteCard date={date} />);
-    fireEvent.click(screen.getByRole('button', { name: 'Changer' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Autre citation' }));
 
-    expect(screen.getByText(`"${nextQuote}"`)).toBeTruthy();
+    expect(screen.getByText(`"${nextQuote.text}"`)).toBeTruthy();
+    expect(screen.getByText(nextQuote.author)).toBeTruthy();
   });
 });
