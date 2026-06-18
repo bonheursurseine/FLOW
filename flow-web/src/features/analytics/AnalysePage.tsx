@@ -9,24 +9,19 @@ import {
   XAxis,
   YAxis
 } from 'recharts';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
 import { EmptyState } from '../../components/EmptyState';
 import { SectionCard } from '../../components/SectionCard';
+import { useTrackingEntries } from '../../hooks/useTrackingEntries';
 import { analyzeEntries } from '../../services/analyticsService';
 import { generateInsights } from '../../services/insightEngine';
-import { trackingRepository } from '../../storage/trackingRepository';
-import type { TrackingEntry } from '../../types/tracking';
 import { formatHourLabel } from '../../utils/entryDisplay';
 
 import { InsightCard } from './InsightCard';
 
 export function AnalysePage() {
-  const [entries, setEntries] = useState<TrackingEntry[]>([]);
-
-  useEffect(() => {
-    void trackingRepository.listEntries().then(setEntries);
-  }, []);
+  const entries = useTrackingEntries();
 
   const analytics = useMemo(() => analyzeEntries(entries), [entries]);
   const insights = useMemo(() => generateInsights(entries), [entries]);

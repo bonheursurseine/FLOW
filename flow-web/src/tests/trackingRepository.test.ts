@@ -4,6 +4,7 @@ import { resetFlowStorageForTests } from '../storage/db';
 import { settingsRepository } from '../storage/settingsRepository';
 import { trackingRepository } from '../storage/trackingRepository';
 import type { CheckInScheduleDraft, TrackingEntryDraft } from '../types/tracking';
+import { toDateKey } from '../utils/dateBuckets';
 
 describe('trackingRepository', () => {
   beforeEach(async () => {
@@ -103,6 +104,31 @@ describe('trackingRepository', () => {
     });
     expect(entries[1].goalText).toBeUndefined();
     expect(entries[1].goalAchieved).toBeUndefined();
+  });
+
+  it('updates only the date portion of an existing entry timestamp', async () => {
+    const originalTimestamp = new Date(2026, 5, 10, 8, 45, 30, 120).toISOString();
+    const saved = await trackingRepository.saveEntry({
+      timestamp: originalTimestamp,
+      entryType: 'freeNote',
+      sourceType: 'spontaneous',
+      freeNote: 'Note deplacee'
+    });
+
+    const updated = await trackingRepository.updateEntryDate(saved.id, '2026-06-15');
+    const originalDate = new Date(originalTimestamp);
+    const updatedDate = new Date(updated.timestamp);
+
+    expect(updated.id).toBe(saved.id);
+    expect(updated.freeNote).toBe('Note deplacee');
+    expect(toDateKey(updated.timestamp)).toBe('2026-06-15');
+    expect(updatedDate.getHours()).toBe(originalDate.getHours());
+    expect(updatedDate.getMinutes()).toBe(originalDate.getMinutes());
+    expect(updatedDate.getSeconds()).toBe(originalDate.getSeconds());
+    expect(updatedDate.getMilliseconds()).toBe(originalDate.getMilliseconds());
+
+    const [storedEntry] = await trackingRepository.listEntries();
+    expect(storedEntry).toEqual(updated);
   });
 
   it('normalizes schedule times before sorting them', async () => {

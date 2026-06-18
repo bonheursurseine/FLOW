@@ -303,6 +303,16 @@ textarea {
   text-align: left;
 }
 
+.history-card__content {
+  display: grid;
+  gap: var(--flow-space-2);
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+}
+
 .history-card strong,
 .insight-card strong {
   font-size: 1rem;
@@ -338,6 +348,11 @@ textarea {
   color: var(--flow-accent);
   font-weight: 700;
   text-transform: capitalize;
+}
+
+.history-card__actions {
+  display: flex;
+  justify-content: flex-end;
 }
 
 .entry-detail {
@@ -525,6 +540,10 @@ textarea {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--flow-space-3);
+}
+
+.entry-sheet__actions--triple {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .entry-sheet__secondary,

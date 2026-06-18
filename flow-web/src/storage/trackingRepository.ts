@@ -1,5 +1,6 @@
 import { FLOW_STORE_NAMES, getFlowStorage } from './db';
 import type { CheckInSchedule, CheckInScheduleDraft, TrackingEntry, TrackingEntryDraft } from '../types/tracking';
+import { isValidDateInputValue, replaceTimestampDate } from '../utils/dateInput';
 
 export interface TrackingRepository {
   clearAll(): Promise<void>;
@@ -9,7 +10,11 @@ export interface TrackingRepository {
   listSchedules(): Promise<CheckInSchedule[]>;
   saveEntry(entry: TrackingEntryDraft): Promise<TrackingEntry>;
   saveSchedule(schedule: CheckInScheduleDraft): Promise<CheckInSchedule>;
+  subscribeToEntries(listener: () => void): () => void;
+  updateEntryDate(id: string, nextDateValue: string): Promise<TrackingEntry>;
 }
+
+const entryListeners = new Set<() => void>();
 
 const trackingDataRepository: TrackingRepository = {
   async clearAll() {
@@ -18,11 +23,13 @@ const trackingDataRepository: TrackingRepository = {
       storage.clear(FLOW_STORE_NAMES.entries),
       storage.clear(FLOW_STORE_NAMES.schedules)
     ]);
+    emitEntriesChange();
   },
 
   async deleteEntry(id) {
     const storage = await getFlowStorage();
     await storage.delete(FLOW_STORE_NAMES.entries, id);
+    emitEntriesChange();
   },
 
   async deleteSchedule(id) {
@@ -63,6 +70,7 @@ const trackingDataRepository: TrackingRepository = {
 
     const storage = await getFlowStorage();
     await storage.put(FLOW_STORE_NAMES.entries, fullEntry);
+    emitEntriesChange();
     return fullEntry;
   },
 
@@ -77,6 +85,43 @@ const trackingDataRepository: TrackingRepository = {
     const storage = await getFlowStorage();
     await storage.put(FLOW_STORE_NAMES.schedules, fullSchedule);
     return fullSchedule;
+  },
+
+  subscribeToEntries(listener) {
+    entryListeners.add(listener);
+    listener();
+
+    return () => {
+      entryListeners.delete(listener);
+    };
+  },
+
+  async updateEntryDate(id, nextDateValue) {
+    if (!isValidDateInputValue(nextDateValue)) {
+      throw new Error('INVALID_ENTRY_DATE');
+    }
+
+    const storage = await getFlowStorage();
+    const existingEntry = await storage.get(FLOW_STORE_NAMES.entries, id);
+
+    if (!existingEntry) {
+      throw new Error('ENTRY_NOT_FOUND');
+    }
+
+    const nextTimestamp = replaceTimestampDate(existingEntry.timestamp, nextDateValue);
+
+    if (!nextTimestamp) {
+      throw new Error('INVALID_ENTRY_DATE');
+    }
+
+    const updatedEntry: TrackingEntry = {
+      ...existingEntry,
+      timestamp: nextTimestamp
+    };
+
+    await storage.put(FLOW_STORE_NAMES.entries, updatedEntry);
+    emitEntriesChange();
+    return updatedEntry;
   }
 };
 
@@ -118,4 +163,8 @@ function normalizeScheduleTime(value: string): string {
   }
 
   return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+}
+
+function emitEntriesChange(): void {
+  entryListeners.forEach((listener) => listener());
 }

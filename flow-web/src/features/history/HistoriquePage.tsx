@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { EmptyState } from '../../components/EmptyState';
 import { SectionCard } from '../../components/SectionCard';
+import { useTrackingEntries } from '../../hooks/useTrackingEntries';
 import { trackingRepository } from '../../storage/trackingRepository';
 import type { EntryType, SourceType, TrackingEntry } from '../../types/tracking';
 import { getDailyGoalStatusLabel } from '../../utils/dailyGoals';
@@ -12,14 +13,11 @@ import { EntryDetailSheet } from './EntryDetailSheet';
 import { HistoryFilters } from './HistoryFilters';
 
 export function HistoriquePage() {
-  const [entries, setEntries] = useState<TrackingEntry[]>([]);
+  const entries = useTrackingEntries();
   const [selectedEntry, setSelectedEntry] = useState<TrackingEntry | null>(null);
   const [selectedSource, setSelectedSource] = useState<SourceType | 'all'>('all');
   const [selectedType, setSelectedType] = useState<EntryType | 'all'>('all');
-
-  useEffect(() => {
-    void loadEntries();
-  }, []);
+  const [sheetMode, setSheetMode] = useState<'details' | 'editDate'>('details');
 
   const filteredEntries = useMemo(
     () =>
@@ -31,24 +29,24 @@ export function HistoriquePage() {
     [entries, selectedSource, selectedType]
   );
 
-  async function loadEntries() {
-    const nextEntries = await trackingRepository.listEntries();
-    setEntries(nextEntries);
-  }
-
   async function handleDelete(entry: TrackingEntry) {
     await trackingRepository.deleteEntry(entry.id);
-    setEntries((currentEntries) => currentEntries.filter((currentEntry) => currentEntry.id !== entry.id));
     setSelectedEntry(null);
   }
 
   function handleSaved(entry: TrackingEntry) {
-    setEntries((currentEntries) => {
-      const nextEntries = currentEntries.filter((currentEntry) => currentEntry.id !== entry.id);
-      nextEntries.push(entry);
-      return nextEntries.toSorted((left, right) => right.timestamp.localeCompare(left.timestamp));
-    });
     setSelectedEntry(entry);
+    setSheetMode('details');
+  }
+
+  function handleOpenDetails(entry: TrackingEntry) {
+    setSelectedEntry(entry);
+    setSheetMode('details');
+  }
+
+  function handleOpenDateEditor(entry: TrackingEntry) {
+    setSelectedEntry(entry);
+    setSheetMode('editDate');
   }
 
   return (
@@ -68,28 +66,36 @@ export function HistoriquePage() {
         ) : (
           <div className="history-list">
             {filteredEntries.map((entry) => (
-              <button
-                className="history-card"
-                key={entry.id}
-                onClick={() => setSelectedEntry(entry)}
-                type="button"
-              >
-                <div className="history-card__meta">
-                  <span>{formatShortDateTime(entry.timestamp)}</span>
-                  <span className="history-card__badge">{getSourceTypeLabel(entry.sourceType)}</span>
+              <article className="history-card" key={entry.id}>
+                <button className="history-card__content" onClick={() => handleOpenDetails(entry)} type="button">
+                  <div className="history-card__meta">
+                    <span>{formatShortDateTime(entry.timestamp)}</span>
+                    <span className="history-card__badge">{getSourceTypeLabel(entry.sourceType)}</span>
+                  </div>
+                  <strong>{getEntryTypeLabel(entry.entryType)}</strong>
+                  {entry.entryType === 'dailyGoal' ? (
+                    <span className="history-card__badge">{getDailyGoalStatusLabel(entry.goalAchieved)}</span>
+                  ) : null}
+                  <p>{summarizeEntry(entry) || 'Entrée sans résumé.'}</p>
+                </button>
+                <div className="history-card__actions">
+                  <button
+                    aria-label={`Modifier la date de ${getEntryTypeLabel(entry.entryType)}`}
+                    className="entry-sheet__secondary"
+                    onClick={() => handleOpenDateEditor(entry)}
+                    type="button"
+                  >
+                    Modifier la date
+                  </button>
                 </div>
-                <strong>{getEntryTypeLabel(entry.entryType)}</strong>
-                {entry.entryType === 'dailyGoal' ? (
-                  <span className="history-card__badge">{getDailyGoalStatusLabel(entry.goalAchieved)}</span>
-                ) : null}
-                <p>{summarizeEntry(entry) || 'Entrée sans résumé.'}</p>
-              </button>
+              </article>
             ))}
           </div>
         )}
       </SectionCard>
       <EntryDetailSheet
         entry={selectedEntry}
+        initialMode={sheetMode}
         onClose={() => setSelectedEntry(null)}
         onDelete={handleDelete}
         onSaved={handleSaved}
